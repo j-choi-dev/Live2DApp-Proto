@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-using UnityEngine.UI;
 using Live2D.Cubism.Core;
 using UnityEngine.XR.ARKit;
 using Unity.Collections;
@@ -11,43 +10,42 @@ public class FaceTracking : MonoBehaviour
 {
     [SerializeField] private ARFaceManager faceManager;
     [SerializeField] private TMP_Text _log;
-    [SerializeField] private GameObject avatarPrefab;
-    private CubismModel live2DModel;
-    private ARKitFaceSubsystem faceSubsystem;
+    [SerializeField] private GameObject _avatarPrefab;
 
-    private CubismParameter faceAngleX;
-    private CubismParameter faceAngleY;
-    private CubismParameter faceAngleZ;
-    private CubismParameter bodyAngleX;
-    private CubismParameter bodyAngleY;
-    private CubismParameter leftEye;
-    private CubismParameter rightEye;
-    private CubismParameter mouthForm;
-    private CubismParameter mouthOpen;
-    private CubismParameter eyeBallX;
-    private CubismParameter eyeBallY;
+    private CubismModel _live2DModel;
+    private ARKitFaceSubsystem _faceSubsystem;
 
-    private float updateFaceAngleX;
-    private float updateFaceAngleY;
-    private float updateFaceAngleZ;
-    private float updateLeftEye;
-    private float updateRightEye;
-    private float updateMouthForm;
-    private float updateMouthOpen;
+    // Live2D 파라미터 멤버변수
+    private CubismParameter _faceAngleX;
+    private CubismParameter _faceAngleY;
+    private CubismParameter _faceAngleZ;
+    private CubismParameter _bodyAngleX;
+    private CubismParameter _bodyAngleY;
+    private CubismParameter _leftEye;
+    private CubismParameter _rightEye;
+    private CubismParameter _mouthForm;
+    private CubismParameter _mouthOpen;
+
+    // 얼굴 회전값 멤버변수
+    private float _updateFaceAngleX;
+    private float _updateFaceAngleY;
+    private float _updateFaceAngleZ;
+
+    // 눈동자 정보 멤버변수
+    private float _updateLeftEye;
+    private float _updateRightEye;
+
+    // 입술 정보 멤버변수
+    private float _updateMouthForm;
+    private float _updateMouthOpen;
 
     private void Awake()
     {
-        _log.text = Vector3.zero.ToString();
-        Debug.Log( Vector3.zero );
-    }
-
-    private void Start()
-    {
         Application.targetFrameRate = 60;
-        live2DModel = avatarPrefab.GetComponent<CubismModel>();
-
-        // 表示したアバターとARKitを同期させる
-        SetCubismParameter( live2DModel );
+        _log.text = Vector3.zero.ToString();
+        _live2DModel = _avatarPrefab.GetComponent<CubismModel>();
+        InitCubismParameter( _live2DModel );
+        Debug.Log( Vector3.zero );
     }
 
     private void OnEnable()
@@ -62,18 +60,24 @@ public class FaceTracking : MonoBehaviour
 
     private void LateUpdate()
     {
-        // 表情
-        leftEye.Value = updateLeftEye;
-        rightEye.Value = updateRightEye;
-        mouthForm.Value = updateMouthForm;
-        mouthOpen.Value = updateMouthOpen;
+        // 표정 : 눈
+        _leftEye.Value = _updateLeftEye;
+        _rightEye.Value = _updateRightEye;
 
-        // // 顔の向き
-        faceAngleX.Value = updateFaceAngleX;
-        faceAngleY.Value = updateFaceAngleY;
-        faceAngleZ.Value = updateFaceAngleZ;
+        // 표정 : 입
+        _mouthForm.Value = _updateMouthForm;
+        _mouthOpen.Value = _updateMouthOpen;
+
+        // 얼굴 방향
+        _faceAngleX.Value = _updateFaceAngleX;
+        _faceAngleY.Value = _updateFaceAngleY;
+        _faceAngleZ.Value = _updateFaceAngleZ;
     }
 
+    /// <summary>
+    /// 얼굴 정보 변경 이벤트
+    /// </summary>
+    /// <param name="eventArgs">발생한 이벤트 값</param>
     private void OnFaceChanged( ARFacesChangedEventArgs eventArgs )
     {
         if( eventArgs.updated.Count != 0 )
@@ -82,70 +86,89 @@ public class FaceTracking : MonoBehaviour
             if( arFace.trackingState == TrackingState.Tracking
                 && ( ARSession.state > ARSessionState.Ready ) )
             {
+                UpdateFaceTransform( arFace );
+                UpdateBlendShape( arFace );
+
+                _log.text = arFace.transform.position.ToString();
+
+                // TODO 삭제 대상 @Choi 25.01.05
                 Debug.Log( arFace.transform.position );
-                _log.text = arFace.transform.position.ToString();
-                _log.text = arFace.transform.position.ToString();
             }
         }
     }
 
-    // 変数にアバターのモーションを定義する
-    private void SetCubismParameter( CubismModel model )
+    /// <summary>
+    /// 아바타의 모션 정보를 멤버 변수에 대입
+    /// </summary>
+    /// <param name="model"></param>
+    private void InitCubismParameter( CubismModel model )
     {
-        faceAngleX = model.Parameters[0];
-        faceAngleY = model.Parameters[1];
-        faceAngleZ = model.Parameters[2];
-        bodyAngleX = model.Parameters[22];
-        bodyAngleY = model.Parameters[23];
-        leftEye = model.Parameters[3];
-        rightEye = model.Parameters[5];
-        mouthForm = model.Parameters[17];
-        mouthOpen = model.Parameters[18];
+        _faceAngleX = model.Parameters[0];
+        _faceAngleY = model.Parameters[1];
+        _faceAngleZ = model.Parameters[2];
+
+        _bodyAngleX = model.Parameters[22];
+        _bodyAngleY = model.Parameters[23];
+
+        _leftEye = model.Parameters[3];
+        _rightEye = model.Parameters[5];
+
+        _mouthForm = model.Parameters[17];
+        _mouthOpen = model.Parameters[18];
     }
 
-    //顔の向きを更新する
+    /// <summary>
+    /// 얼굴 방향dmf 변경
+    /// </summary>
+    /// <param name="arFace">ARFace 정보</param>
     private void UpdateFaceTransform( ARFace arFace )
     {
-        // 顔の位置データを取得
-        Quaternion faceRotation = arFace.transform.rotation;
+        // 얼굴의 위치 정보 취득
+        var faceRotation = arFace.transform.rotation;
 
-        float x = NormalizeAngle( faceRotation.eulerAngles.x )* 2f;
-        float y = NormalizeAngle( faceRotation.eulerAngles.y );
-        float z = NormalizeAngle( faceRotation.eulerAngles.z )* 2f;
+        var x = NormalizeAngle( faceRotation.eulerAngles.x )* 2f;
+        var y = NormalizeAngle( faceRotation.eulerAngles.y );
+        var z = NormalizeAngle( faceRotation.eulerAngles.z )* 2f;
 
-        // 新しい顔の情報を変数にいれる
-        updateFaceAngleX = y;
-        updateFaceAngleY = x;
-        updateFaceAngleZ = z;
+        // 새로운 얼굴 회전값을 변수에 대입
+        _updateFaceAngleX = y;
+        _updateFaceAngleY = x;
+        _updateFaceAngleZ = z;
     }
 
-    // 表情を更新する
+    /// <summary>
+    /// 표정 정보를 변경
+    /// </summary>
+    /// <param name="arFace">ARFace 정보</param>
     private void UpdateBlendShape( ARFace arFace )
     {
-        faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
-        using var blendShapesARKit = faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
-        foreach( var featureCoefficient in blendShapesARKit )
+        _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
+        using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
+        for(var i=0; i<blendShapesARKit.Length; i++ )
         {
-            if( featureCoefficient.blendShapeLocation == ARKitBlendShapeLocation.EyeBlinkLeft )
+            switch( blendShapesARKit[i].blendShapeLocation )
             {
-                updateLeftEye = 1 - featureCoefficient.coefficient;
-            }
-            if( featureCoefficient.blendShapeLocation == ARKitBlendShapeLocation.EyeBlinkRight )
-            {
-                updateRightEye = 1 - featureCoefficient.coefficient;
-            }
-            if( featureCoefficient.blendShapeLocation == ARKitBlendShapeLocation.MouthFunnel )
-            {
-                updateMouthForm = 1 - featureCoefficient.coefficient * 2;
-            }
-            if( featureCoefficient.blendShapeLocation == ARKitBlendShapeLocation.JawOpen )
-            {
-                updateMouthOpen = ( float )( featureCoefficient.coefficient * 1.8 );
+                case ARKitBlendShapeLocation.EyeBlinkLeft:
+                    _updateLeftEye = 1 - blendShapesARKit[i].coefficient;
+                    continue;
+                case ARKitBlendShapeLocation.EyeBlinkRight:
+                    _updateRightEye = 1 - blendShapesARKit[i].coefficient;
+                    continue;
+                case ARKitBlendShapeLocation.MouthFunnel:
+                    _updateMouthForm = 1 - blendShapesARKit[i].coefficient * 2;
+                    continue;
+                case ARKitBlendShapeLocation.JawOpen:
+                    _updateMouthOpen = ( float )( blendShapesARKit[i].coefficient * 1.8 );
+                    continue;
             }
         }
     }
 
-    // 顔の角度を正規化する
+    /// <summary>
+    /// 얼굴 각도를 정규화하는 함수
+    /// </summary>
+    /// <param name="angle"></param>
+    /// <returns></returns>
     private float NormalizeAngle( float angle )
     {
         if( angle > 180 )
