@@ -21,8 +21,8 @@ public class FaceTracking : MonoBehaviour
     private CubismParameter _faceAngleZ;
     private CubismParameter _bodyAngleX;
     private CubismParameter _bodyAngleY;
-    private CubismParameter _leftEye;
-    private CubismParameter _rightEye;
+    private CubismParameter _leftEyeBlink;
+    private CubismParameter _rightEyeBlink;
     private CubismParameter _mouthForm;
     private CubismParameter _mouthOpen;
 
@@ -61,8 +61,8 @@ public class FaceTracking : MonoBehaviour
     private void LateUpdate()
     {
         // 표정 : 눈
-        _leftEye.Value = _updateLeftEye;
-        _rightEye.Value = _updateRightEye;
+        _leftEyeBlink.Value = _updateLeftEye;
+        _rightEyeBlink.Value = _updateRightEye;
 
         // 표정 : 입
         _mouthForm.Value = _updateMouthForm;
@@ -89,8 +89,6 @@ public class FaceTracking : MonoBehaviour
                 UpdateFaceTransform( arFace );
                 UpdateBlendShape( arFace );
 
-                _log.text = arFace.transform.position.ToString();
-
                 // TODO 삭제 대상 @Choi 25.01.05
                 Debug.Log( arFace.transform.position );
             }
@@ -110,8 +108,8 @@ public class FaceTracking : MonoBehaviour
         _bodyAngleX = model.Parameters[22];
         _bodyAngleY = model.Parameters[23];
 
-        _leftEye = model.Parameters[3];
-        _rightEye = model.Parameters[5];
+        _leftEyeBlink = model.Parameters[4];
+        _rightEyeBlink = model.Parameters[6];
 
         _mouthForm = model.Parameters[17];
         _mouthOpen = model.Parameters[18];
@@ -126,9 +124,9 @@ public class FaceTracking : MonoBehaviour
         // 얼굴의 위치 정보 취득
         var faceRotation = arFace.transform.rotation;
 
-        var x = NormalizeAngle( faceRotation.eulerAngles.x )* 2f;
+        var x = NormalizeAngle( faceRotation.eulerAngles.x ) * 2f * -1f;
         var y = NormalizeAngle( faceRotation.eulerAngles.y );
-        var z = NormalizeAngle( faceRotation.eulerAngles.z )* 2f;
+        var z = NormalizeAngle( faceRotation.eulerAngles.z ) * 2f;
 
         // 새로운 얼굴 회전값을 변수에 대입
         _updateFaceAngleX = y;
@@ -150,9 +148,11 @@ public class FaceTracking : MonoBehaviour
             {
                 case ARKitBlendShapeLocation.EyeBlinkLeft:
                     _updateLeftEye = 1 - blendShapesARKit[i].coefficient;
+                    _log.text = $"L_Eye : {_updateLeftEye}";
                     continue;
                 case ARKitBlendShapeLocation.EyeBlinkRight:
                     _updateRightEye = 1 - blendShapesARKit[i].coefficient;
+                    _log.text = $"R_Eye : {_updateRightEye}";
                     continue;
                 case ARKitBlendShapeLocation.MouthFunnel:
                     _updateMouthForm = 1 - blendShapesARKit[i].coefficient * 2;
