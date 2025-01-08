@@ -23,6 +23,8 @@ public class FaceTracking : MonoBehaviour
     private CubismParameter _bodyAngleY;
     private CubismParameter _leftEyeBlink;
     private CubismParameter _rightEyeBlink;
+    private CubismParameter _eyeBallX;
+    private CubismParameter _eyeBallY;
     private CubismParameter _mouthForm;
     private CubismParameter _mouthOpen;
 
@@ -34,6 +36,11 @@ public class FaceTracking : MonoBehaviour
     // 눈동자 정보 멤버변수
     private float _updateLeftEye;
     private float _updateRightEye;
+
+    // 눈동자 X 값 멤버변수
+    private float _updateEyeballX;
+    // 눈동자 Y 값 멤버변수
+    private float _updateEyeballY;
 
     // 입술 정보 멤버변수
     private float _updateMouthForm;
@@ -63,6 +70,8 @@ public class FaceTracking : MonoBehaviour
         // 표정 : 눈
         _leftEyeBlink.Value = _updateLeftEye;
         _rightEyeBlink.Value = _updateRightEye;
+        _eyeBallX.Value = _updateEyeballX;
+        _eyeBallY.Value = _updateEyeballY;
 
         // 표정 : 입
         _mouthForm.Value = _updateMouthForm;
@@ -87,10 +96,8 @@ public class FaceTracking : MonoBehaviour
                 && ( ARSession.state > ARSessionState.Ready ) )
             {
                 UpdateFaceTransform( arFace );
-                UpdateBlendShape( arFace );
-
-                // TODO 삭제 대상 @Choi 25.01.05
-                Debug.Log( arFace.transform.position );
+                UpdateEyeBlendShape( arFace );
+                UpdateMouthBlendShape( arFace );
             }
         }
     }
@@ -110,6 +117,8 @@ public class FaceTracking : MonoBehaviour
 
         _leftEyeBlink = model.Parameters[4];
         _rightEyeBlink = model.Parameters[6];
+        _eyeBallX = model.Parameters[8];
+        _eyeBallY = model.Parameters[9];
 
         _mouthForm = model.Parameters[17];
         _mouthOpen = model.Parameters[18];
@@ -138,7 +147,7 @@ public class FaceTracking : MonoBehaviour
     /// 표정 정보를 변경
     /// </summary>
     /// <param name="arFace">ARFace 정보</param>
-    private void UpdateBlendShape( ARFace arFace )
+    private void UpdateEyeBlendShape( ARFace arFace )
     {
         _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
         using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
@@ -154,6 +163,40 @@ public class FaceTracking : MonoBehaviour
                     _updateRightEye = 1 - blendShapesARKit[i].coefficient;
                     _log.text = $"R_Eye : {_updateRightEye}";
                     continue;
+                case ARKitBlendShapeLocation.EyeLookInLeft:
+                    _updateEyeballX = -blendShapesARKit[i].coefficient;
+                    _log.text = $"Look_L : {_updateRightEye}";
+                    continue;
+                case ARKitBlendShapeLocation.EyeLookInRight:
+                    _updateEyeballY = blendShapesARKit[i].coefficient;
+                    _log.text = $"Look_R : {_updateRightEye}";
+                    continue;
+                case ARKitBlendShapeLocation.EyeLookUpLeft:
+                case ARKitBlendShapeLocation.EyeLookUpRight:
+                    _updateEyeballY = -blendShapesARKit[i].coefficient;
+                    _log.text = $"Look_Up : {_updateEyeballY}";
+                    continue;
+                case ARKitBlendShapeLocation.EyeLookDownLeft:
+                case ARKitBlendShapeLocation.EyeLookDownRight:
+                    _updateEyeballY = blendShapesARKit[i].coefficient;
+                    _log.text = $"Look_Dn : {_updateEyeballY}";
+                    continue;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 표정 정보를 변경
+    /// </summary>
+    /// <param name="arFace">ARFace 정보</param>
+    private void UpdateMouthBlendShape( ARFace arFace )
+    {
+        _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
+        using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
+        for( var i = 0; i<blendShapesARKit.Length; i++ )
+        {
+            switch( blendShapesARKit[i].blendShapeLocation )
+            {
                 case ARKitBlendShapeLocation.MouthFunnel:
                     _updateMouthForm = 1 - blendShapesARKit[i].coefficient * 2;
                     continue;
