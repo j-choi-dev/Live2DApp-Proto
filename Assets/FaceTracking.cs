@@ -108,6 +108,10 @@ public class FaceTracking : MonoBehaviour
     /// <param name="model"></param>
     private void InitCubismParameter( CubismModel model )
     {
+        for( int i = 0; i < model.Parameters.Length; i++ )
+        {
+            Debug.Log( $"{i} = {model.Parameters[i].Id}" );
+        }
         _faceAngleX = model.Parameters[0];
         _faceAngleY = model.Parameters[1];
         _faceAngleZ = model.Parameters[2];
@@ -157,30 +161,30 @@ public class FaceTracking : MonoBehaviour
             {
                 case ARKitBlendShapeLocation.EyeBlinkLeft:
                     _updateLeftEye = 1 - blendShapesARKit[i].coefficient;
-                    _log.text = $"L_Eye : {_updateLeftEye}";
-                    continue;
+                    //_log.text = $"L_Eye : {_updateLeftEye}";
+                    break; ;
                 case ARKitBlendShapeLocation.EyeBlinkRight:
                     _updateRightEye = 1 - blendShapesARKit[i].coefficient;
-                    _log.text = $"R_Eye : {_updateRightEye}";
-                    continue;
+                    //_log.text = $"R_Eye : {_updateRightEye}";
+                    break;
                 case ARKitBlendShapeLocation.EyeLookInLeft:
                     _updateEyeballX = -blendShapesARKit[i].coefficient;
-                    _log.text = $"Look_L : {_updateRightEye}";
-                    continue;
+                    _log.text = $"Look_L : {_updateEyeballX}";
+                    break;
                 case ARKitBlendShapeLocation.EyeLookInRight:
-                    _updateEyeballY = blendShapesARKit[i].coefficient;
-                    _log.text = $"Look_R : {_updateRightEye}";
-                    continue;
+                    _updateEyeballX = blendShapesARKit[i].coefficient;
+                    _log.text = $"Look_R : {_updateEyeballX}";
+                    break;
                 case ARKitBlendShapeLocation.EyeLookUpLeft:
                 case ARKitBlendShapeLocation.EyeLookUpRight:
                     _updateEyeballY = -blendShapesARKit[i].coefficient;
-                    _log.text = $"Look_Up : {_updateEyeballY}";
-                    continue;
+                    //_log.text = $"Look_Up : {_updateEyeballY}";
+                    break;
                 case ARKitBlendShapeLocation.EyeLookDownLeft:
                 case ARKitBlendShapeLocation.EyeLookDownRight:
                     _updateEyeballY = blendShapesARKit[i].coefficient;
-                    _log.text = $"Look_Dn : {_updateEyeballY}";
-                    continue;
+                    //_log.text = $"Look_Dn : {_updateEyeballY}";
+                    break;
             }
         }
     }
@@ -199,10 +203,10 @@ public class FaceTracking : MonoBehaviour
             {
                 case ARKitBlendShapeLocation.MouthFunnel:
                     _updateMouthForm = 1 - blendShapesARKit[i].coefficient * 2;
-                    continue;
+                    break;
                 case ARKitBlendShapeLocation.JawOpen:
                     _updateMouthOpen = ( float )( blendShapesARKit[i].coefficient * 1.8 );
-                    continue;
+                    break;
             }
         }
     }
