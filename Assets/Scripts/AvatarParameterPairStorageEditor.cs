@@ -1,11 +1,11 @@
 using UnityEngine;
-using UnityEditor;
-using System.Collections.Generic;
 using AvatarSystem.Domain;
 using AvatarStstem;
 
 namespace StudioSystem.Core.Editor
 {
+# if UNITY_EDITOR
+    using UnityEditor;
     [CustomEditor( typeof( AvatarParameterPair ) )]
     public class AvatarParameterPairStorageEditor : UnityEditor.Editor
     {
@@ -42,4 +42,5 @@ namespace StudioSystem.Core.Editor
             EditorUtility.SetDirty( targetScript );
         }
     }
+# endif
 }
