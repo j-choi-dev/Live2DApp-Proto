@@ -5,6 +5,7 @@ using UnityEngine.XR.ARKit;
 using Unity.Collections;
 using TMPro;
 using AvatarStstem;
+using System;
 
 public class FaceTracking : MonoBehaviour
 {
@@ -18,7 +19,6 @@ public class FaceTracking : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         _log.text = Vector3.zero.ToString();
-        _avatar.InitCubismParameter();
         Debug.Log( Vector3.zero );
     }
 
@@ -76,6 +76,7 @@ public class FaceTracking : MonoBehaviour
     /// <param name="arFace">ARFace 정보</param>
     private void UpdateEyeBlendShape( ARFace arFace )
     {
+        var msg = string.Empty;
         _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
         using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
         for(var i=0; i<blendShapesARKit.Length; i++ )
@@ -91,11 +92,11 @@ public class FaceTracking : MonoBehaviour
                     break;
                 case ARKitBlendShapeLocation.EyeLookInLeft:
                     _avatar.SetEyeLookHorizontal( -blendShapesARKit[i].coefficient );
-                    _log.text = $"Look_L : {-blendShapesARKit[i].coefficient}";
+                    msg += $"Look_L : {-blendShapesARKit[i].coefficient}";
                     break;
                 case ARKitBlendShapeLocation.EyeLookInRight:
                     _avatar.SetEyeLookHorizontal( blendShapesARKit[i].coefficient );
-                    _log.text = $"Look_R : {blendShapesARKit[i].coefficient}";
+                    msg += $"Look_R : {blendShapesARKit[i].coefficient}";
                     break;
                 case ARKitBlendShapeLocation.EyeLookUpLeft:
                 case ARKitBlendShapeLocation.EyeLookUpRight:
@@ -107,6 +108,7 @@ public class FaceTracking : MonoBehaviour
                     break;
             }
         }
+        _log.text = $"{msg}";
     }
 
     /// <summary>

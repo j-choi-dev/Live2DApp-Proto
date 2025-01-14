@@ -1,5 +1,6 @@
 using AvatarSystem.Domain;
 using Live2D.Cubism.Core;
+using TMPro;
 using UnityEngine;
 
 namespace AvatarStstem
@@ -9,19 +10,21 @@ namespace AvatarStstem
         [SerializeField] private AvatarParameterPair _pair = null;
         [SerializeField] private CubismModelExtention _avatar = null;
         [SerializeField] private CubismMoc _moc;
+        [SerializeField] private TMP_Text _log;
+        private bool _isInitialized = false;
 
         // Live2D 파라미터 멤버변수
-        private CubismParameter _faceAngleX;
-        private CubismParameter _faceAngleY;
-        private CubismParameter _faceAngleZ;
-        private CubismParameter _bodyAngleX;
-        private CubismParameter _bodyAngleY;
-        private CubismParameter _leftEyeBlink;
-        private CubismParameter _rightEyeBlink;
-        private CubismParameter _eyeBallX;
-        private CubismParameter _eyeBallY;
-        private CubismParameter _mouthForm;
-        private CubismParameter _mouthOpen;
+        private CubismParameter _faceAngleX = null;
+        private CubismParameter _faceAngleY = null;
+        private CubismParameter _faceAngleZ = null;
+        private CubismParameter _bodyAngleX = null;
+        private CubismParameter _bodyAngleY = null;
+        private CubismParameter _leftEyeBlink = null;
+        private CubismParameter _rightEyeBlink = null;
+        private CubismParameter _eyeBallX = null;
+        private CubismParameter _eyeBallY = null;
+        private CubismParameter _mouthForm = null;
+        private CubismParameter _mouthOpen = null;
 
         // 얼굴 회전값 멤버변수
         private float _updateFaceAngleX;
@@ -41,6 +44,8 @@ namespace AvatarStstem
         private float _updateMouthForm;
         private float _updateMouthOpen;
 
+        private string _msg = string.Empty;
+
 
         private void Awake()
         {
@@ -51,6 +56,8 @@ namespace AvatarStstem
         {
             _avatar.SetMoc( _moc );
             _avatar.SetParamteters( _pair.Parameters );
+            InitCubismParameter();
+            _isInitialized = true;
         }
 
         /// <summary>
@@ -70,9 +77,9 @@ namespace AvatarStstem
             _eyeBallY = _avatar.Parameters[( int )AvatarPartsParameter.EyeBallY];
         }
 
-        public void SetFaceAngleX( float value ) => _faceAngleX.Value = value;
-        public void SetFaceAngleY( float value ) => _faceAngleY.Value = value;
-        public void SetFaceAngleZ( float value ) => _faceAngleZ.Value = value;
+        public void SetFaceAngleX( float value ) => _updateFaceAngleX = value;
+        public void SetFaceAngleY( float value ) => _updateFaceAngleY = value;
+        public void SetFaceAngleZ( float value ) => _updateFaceAngleZ = value;
 
         public void SetEyeBlinkLeft( float value ) => _updateLeftEye = value;
         public void SetEyeBlinkRight( float value ) => _updateRightEye = value;
@@ -81,5 +88,29 @@ namespace AvatarStstem
 
         public void SetMouthForm( float value ) => _updateMouthForm = value;
         public void SetMouthOpen( float value ) => _updateMouthOpen = value;
+
+        private void LateUpdate()
+        {
+            if (_isInitialized == false)
+            {
+                _msg = string.Empty;
+                return;
+            }
+            _faceAngleX.Value = _updateFaceAngleX;
+            _faceAngleY.Value = _updateFaceAngleY;
+            _faceAngleZ.Value = _updateFaceAngleZ;
+            _msg = $"{_faceAngleX.Value.ToString( "#.##" )}, {_faceAngleY.Value.ToString( "#.##" )}, {_faceAngleZ.Value.ToString( "#.##" )}";
+
+            _leftEyeBlink.Value = _updateLeftEye;
+            _rightEyeBlink.Value = _updateRightEye;
+            
+            _eyeBallX.Value = _updateEyeballX;
+            _eyeBallY.Value = _updateEyeballY;
+            _msg += $"\n{_eyeBallX.Value.ToString( "#.##" )}, {_eyeBallY.Value.ToString( "#.##" )}";
+            _log.text = _msg;
+            _mouthForm.Value = _updateMouthForm;
+            _mouthOpen.Value = _updateMouthOpen;
+            _msg = string.Empty;
+        }
     }
 }

@@ -49,6 +49,7 @@ MonoBehaviour:
   _pair: {fileID: 0}
   _avatar: {fileID: 0}
   _moc: {fileID: 0}
+  _log: {fileID: 0}
 --- !u!1 &8297387063802565609
 GameObject:
   m_ObjectHideFlags: 0
