@@ -101,6 +101,8 @@ namespace Live2D.Cubism.Core
             private set { _moc = value; }
         }
 
+        public void SetCubismMoc(CubismMoc moc) => _moc = moc;
+
 
         /// <summary>
         /// TaskableModel for unmanaged backend.

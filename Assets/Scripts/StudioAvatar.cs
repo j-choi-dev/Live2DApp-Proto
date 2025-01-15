@@ -1,5 +1,6 @@
 using AvatarSystem.Domain;
 using Live2D.Cubism.Core;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace AvatarStstem
     public class StudioAvatar : MonoBehaviour
     {
         [SerializeField] private AvatarParameterPair _pair = null;
-        [SerializeField] private CubismModelExtention _avatar = null;
+        [SerializeField] private CubismModel _avatar = null;
         [SerializeField] private CubismMoc _moc;
         [SerializeField] private TMP_Text _log;
         private bool _isInitialized = false;
@@ -54,8 +55,7 @@ namespace AvatarStstem
 
         public void Init()
         {
-            _avatar.SetMoc( _moc );
-            _avatar.SetParamteters( _pair.Parameters );
+            _avatar.SetCubismMoc( _moc );
             InitCubismParameter();
             _isInitialized = true;
         }
@@ -66,15 +66,15 @@ namespace AvatarStstem
         /// <param name="model"></param>
         public void InitCubismParameter()
         {
-            _faceAngleX = _avatar.Parameters[(int)AvatarPartsParameter.FaceAngle_X];
-            _faceAngleY = _avatar.Parameters[( int )AvatarPartsParameter.FaceAngle_Y];
-            _faceAngleZ = _avatar.Parameters[( int )AvatarPartsParameter.FaceAngle_Z];
+            _faceAngleX = _avatar.Parameters.First(arg => arg.Id == _pair.ParameterPairs[(int)AvatarPartsParameter.FaceAngle_X].parameter.Id);
+            _faceAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.FaceAngle_Y].parameter.Id );
+            _faceAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.FaceAngle_Z].parameter.Id );
 
-            _leftEyeBlink = _avatar.Parameters[( int )AvatarPartsParameter.LeftEyeBlink];
-            _rightEyeBlink = _avatar.Parameters[( int )AvatarPartsParameter.RightEyeBlink];
+            _leftEyeBlink = _avatar.Parameters.First( arg => arg.Id ==_pair.ParameterPairs[( int )AvatarPartsParameter.LeftEyeBlink].parameter.Id);
+            _rightEyeBlink = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.RightEyeBlink].parameter.Id );
 
-            _eyeBallX = _avatar.Parameters[( int )AvatarPartsParameter.EyeBallX];
-            _eyeBallY = _avatar.Parameters[( int )AvatarPartsParameter.EyeBallY];
+            _eyeBallX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallX].parameter.Id );
+            _eyeBallY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallY].parameter.Id );
         }
 
         public void SetFaceAngleX( float value ) => _updateFaceAngleX = value;
@@ -108,8 +108,8 @@ namespace AvatarStstem
             _eyeBallY.Value = _updateEyeballY;
             _msg += $"\n{_eyeBallX.Value.ToString( "#.##" )}, {_eyeBallY.Value.ToString( "#.##" )}";
             _log.text = _msg;
-            _mouthForm.Value = _updateMouthForm;
-            _mouthOpen.Value = _updateMouthOpen;
+            //_mouthForm.Value = _updateMouthForm;
+            //_mouthOpen.Value = _updateMouthOpen;
             _msg = string.Empty;
         }
     }

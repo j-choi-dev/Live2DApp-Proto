@@ -817,13 +817,12 @@ namespace Live2D.Cubism.Rendering
         /// </summary>
         /// <param name="sender">Model with new render data.</param>
         /// <param name="data">New render data.</param>
-        private void OnDynamicDrawableData(CubismModel sender, CubismDynamicDrawableData[] data)
+        private void OnDynamicDrawableData( CubismModel sender, CubismDynamicDrawableData[] data)
         {
             // Get drawables.
             var drawables = sender.Drawables;
             var renderers = Renderers;
-
-
+            
             // Handle render data changes.
             for (var i = 0; i < data.Length; ++i)
             {

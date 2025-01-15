@@ -60,7 +60,7 @@ public class FaceTracking : MonoBehaviour
         // 얼굴의 위치 정보 취득
         var faceRotation = arFace.transform.rotation;
 
-        var x = NormalizeAngle( faceRotation.eulerAngles.x ) * 2f * -1f;
+        var x = NormalizeAngle( faceRotation.eulerAngles.x ) * 2f;
         var y = NormalizeAngle( faceRotation.eulerAngles.y );
         var z = NormalizeAngle( faceRotation.eulerAngles.z ) * 2f;
 
@@ -92,7 +92,7 @@ public class FaceTracking : MonoBehaviour
                     break;
                 case ARKitBlendShapeLocation.EyeLookInLeft:
                     _avatar.SetEyeLookHorizontal( -blendShapesARKit[i].coefficient );
-                    msg += $"Look_L : {-blendShapesARKit[i].coefficient}";
+                    msg += $"Look_L : {-blendShapesARKit[i].coefficient}\n";
                     break;
                 case ARKitBlendShapeLocation.EyeLookInRight:
                     _avatar.SetEyeLookHorizontal( blendShapesARKit[i].coefficient );

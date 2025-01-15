@@ -362,6 +362,7 @@ namespace Live2D.Cubism.Framework.Json
         /// <returns>The instantiated <see cref="CubismModel">model</see> on success; <see langword="null"/> otherwise.</returns>
         public CubismModel ToModel(bool shouldImportAsOriginalWorkflow = false)
         {
+            Debug.Log( $"@Choi ToModel(bool)" );
             return ToModel(CubismBuiltinPickers.MaterialPicker, CubismBuiltinPickers.TexturePicker, shouldImportAsOriginalWorkflow);
         }
 
@@ -374,6 +375,7 @@ namespace Live2D.Cubism.Framework.Json
         /// <returns>The instantiated <see cref="CubismModel">model</see> on success; <see langword="null"/> otherwise.</returns>
         public CubismModel ToModel(MaterialPicker pickMaterial, TexturePicker pickTexture, bool shouldImportAsOriginalWorkflow = false)
         {
+            Debug.Log( $"@Choi ToModel(MaterialPicker, TexturePicker, bool)" );
             // Initialize model source and instantiate it.
             var mocAsBytes = Moc3;
 
