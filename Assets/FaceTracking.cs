@@ -90,7 +90,7 @@ public class FaceTracking : MonoBehaviour
                     _avatar.SetEyeBlinkLeft( 1 - blendShapesARKit[i].coefficient );
                     break; ;
                 case ARKitBlendShapeLocation.EyeBlinkRight:
-                    _avatar.SetEyeBlinkLeft( 1 - blendShapesARKit[i].coefficient );
+                    _avatar.SetEyeBlinkRight( 1 - blendShapesARKit[i].coefficient );
                     break;
                 case ARKitBlendShapeLocation.EyeLookInLeft:
                     _avatar.SetEyeLookHorizontal( -blendShapesARKit[i].coefficient );

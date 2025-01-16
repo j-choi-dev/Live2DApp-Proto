@@ -43,11 +43,10 @@ namespace AvatarStstem
         // 입술 정보 멤버변수
         private float _updateMouthForm;
         private float _updateMouthOpen;
-
-        private string _msg = string.Empty;
-
-        public string AvatarMsg = string.Empty;
-        public string AvatarLog = string.Empty;
+        
+        // TODO 임시 변수 -> 동작확인이 끝나는 타이밍에 삭제할 것 @Choi 25.01.16
+        public string AvatarMsg { get; private set; } = string.Empty;
+        public string AvatarLog { get; private set; } = string.Empty;
         public bool IsInitialized => _isInitialized;
 
 
@@ -98,7 +97,8 @@ namespace AvatarStstem
         {
             if (_isInitialized == false)
             {
-                _msg = string.Empty;
+                AvatarMsg = string.Empty;
+                AvatarLog = string.Empty;
                 return;
             }
             _faceAngleX.Value = _updateFaceAngleX;
@@ -108,7 +108,8 @@ namespace AvatarStstem
 
             _leftEyeBlink.Value = _updateLeftEye;
             _rightEyeBlink.Value = _updateRightEye;
-            
+            AvatarLog += $"\n{_leftEyeBlink.Value.ToString( "#.##" )}, {_rightEyeBlink.Value.ToString( "#.##" )}";
+
             _eyeBallX.Value = _updateEyeballX;
             _eyeBallY.Value = _updateEyeballY;
             AvatarLog += $"\n{_eyeBallX.Value.ToString( "#.##" )}, {_eyeBallY.Value.ToString( "#.##" )}";
