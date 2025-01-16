@@ -11,7 +11,6 @@ namespace AvatarStstem
         [SerializeField] private AvatarParameterPair _pair = null;
         [SerializeField] private CubismModel _avatar = null;
         [SerializeField] private CubismMoc _moc;
-        [SerializeField] private TMP_Text _log;
         private bool _isInitialized = false;
 
         // Live2D 파라미터 멤버변수
@@ -47,6 +46,10 @@ namespace AvatarStstem
 
         private string _msg = string.Empty;
 
+        public string AvatarMsg = string.Empty;
+        public string AvatarLog = string.Empty;
+        public bool IsInitialized => _isInitialized;
+
 
         private void Awake()
         {
@@ -75,6 +78,8 @@ namespace AvatarStstem
 
             _eyeBallX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallX].parameter.Id );
             _eyeBallY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallY].parameter.Id );
+            AvatarMsg = $"{_faceAngleX.Id}, {_faceAngleY.Id}, {_faceAngleZ.Id}";
+            Debug.Log( AvatarMsg );            
         }
 
         public void SetFaceAngleX( float value ) => _updateFaceAngleX = value;
@@ -99,18 +104,17 @@ namespace AvatarStstem
             _faceAngleX.Value = _updateFaceAngleX;
             _faceAngleY.Value = _updateFaceAngleY;
             _faceAngleZ.Value = _updateFaceAngleZ;
-            _msg = $"{_faceAngleX.Value.ToString( "#.##" )}, {_faceAngleY.Value.ToString( "#.##" )}, {_faceAngleZ.Value.ToString( "#.##" )}";
+            AvatarLog = $"{_faceAngleX.Value.ToString( "#.##" )}, {_faceAngleY.Value.ToString( "#.##" )}, {_faceAngleZ.Value.ToString( "#.##" )}";
 
             _leftEyeBlink.Value = _updateLeftEye;
             _rightEyeBlink.Value = _updateRightEye;
             
             _eyeBallX.Value = _updateEyeballX;
             _eyeBallY.Value = _updateEyeballY;
-            _msg += $"\n{_eyeBallX.Value.ToString( "#.##" )}, {_eyeBallY.Value.ToString( "#.##" )}";
-            _log.text = _msg;
+            AvatarLog += $"\n{_eyeBallX.Value.ToString( "#.##" )}, {_eyeBallY.Value.ToString( "#.##" )}";
             //_mouthForm.Value = _updateMouthForm;
             //_mouthOpen.Value = _updateMouthOpen;
-            _msg = string.Empty;
+            AvatarLog = string.Empty;
         }
     }
 }

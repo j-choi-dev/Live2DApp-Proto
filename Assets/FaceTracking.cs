@@ -11,6 +11,8 @@ public class FaceTracking : MonoBehaviour
 {
     [SerializeField] private ARFaceManager faceManager;
     [SerializeField] private TMP_Text _log;
+    [SerializeField] private TMP_Text _log2;
+    [SerializeField] private TMP_Text _log3;
     [SerializeField] private StudioAvatar _avatar;
 
     private ARKitFaceSubsystem _faceSubsystem;
@@ -145,6 +147,12 @@ public class FaceTracking : MonoBehaviour
             return angle - 360;
         }
         return angle;
+    }
+
+    private void Update()
+    {
+        _log2.text = _avatar.AvatarLog;
+        _log3.text = _avatar.AvatarMsg;
     }
 }
 
