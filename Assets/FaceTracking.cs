@@ -85,6 +85,7 @@ public class FaceTracking : MonoBehaviour
         var leftEyeOut = 0f;
         var rightEyeIn = 0f;
         var rightEyeOut = 0f;
+        var horizontalResult = 0f;
         for(var i=0; i<blendShapesARKit.Length; i++ )
         {
             //switch( blendShapesARKit[i].blendShapeLocation )
@@ -123,19 +124,15 @@ public class FaceTracking : MonoBehaviour
 
                 case ARKitBlendShapeLocation.EyeLookInLeft:
                     leftEyeIn = blendShapesARKit[i].coefficient;
-                    msg += $"LookIn_L : {leftEyeIn}, ";
                     break;
                 case ARKitBlendShapeLocation.EyeLookInRight:
                     rightEyeIn = blendShapesARKit[i].coefficient;
-                    msg += $"LookIn_R : {blendShapesARKit[i].coefficient}\n";
                     break;
                 case ARKitBlendShapeLocation.EyeLookOutLeft:
                     leftEyeOut = blendShapesARKit[i].coefficient;
-                    msg += $"LookOut_L : {leftEyeOut}, ";
                     break;
                 case ARKitBlendShapeLocation.EyeLookOutRight:
                     rightEyeOut = blendShapesARKit[i].coefficient;
-                    msg += $"LookOut_R : {blendShapesARKit[i].coefficient}\n";
                     break;
                 case ARKitBlendShapeLocation.EyeLookUpLeft:
                 case ARKitBlendShapeLocation.EyeLookUpRight:
@@ -148,12 +145,13 @@ public class FaceTracking : MonoBehaviour
             }
             var leftEyeHorizontal = leftEyeOut - leftEyeIn;
             var rightEyeHorizontal = rightEyeOut - rightEyeIn;
-            var overallHorizontal = ( leftEyeHorizontal + rightEyeHorizontal ) / 2;
-            msg += $"Result : {overallHorizontal}";
+            horizontalResult = ( leftEyeHorizontal + rightEyeHorizontal ) / 2f;
+            msg += $"LI_L : {leftEyeIn}, LI_R : {rightEyeIn}\nLO_L : {leftEyeOut}, LO_R : {rightEyeOut}";
 
-            _avatar.SetEyeLookHorizontal( overallHorizontal );
+            _avatar.SetEyeLookHorizontal( horizontalResult );
         }
-        _log.text = $"{msg}";
+        _log.text = $"LI_L : {leftEyeIn}, LI_R : {rightEyeIn}\nLO_L : {leftEyeOut}, LO_R : {rightEyeOut}";
+        _log2.text = $"{horizontalResult}";
     }
 
     /// <summary>
