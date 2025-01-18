@@ -77,7 +77,7 @@ namespace AvatarStstem
 
             _eyeBallX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallX].parameter.Id );
             _eyeBallY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallY].parameter.Id );
-            AvatarMsg = $"{_faceAngleX.Id}, {_faceAngleY.Id}, {_faceAngleZ.Id}";
+            AvatarMsg = $"{_eyeBallX.Id}, {_eyeBallY.Id}";
             Debug.Log( AvatarMsg );            
         }
 

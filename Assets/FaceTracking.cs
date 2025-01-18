@@ -81,24 +81,61 @@ public class FaceTracking : MonoBehaviour
         var msg = string.Empty;
         _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
         using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
+        var leftEyeIn = 0f;
+        var leftEyeOut = 0f;
+        var rightEyeIn = 0f;
+        var rightEyeOut = 0f;
         for(var i=0; i<blendShapesARKit.Length; i++ )
         {
+            //switch( blendShapesARKit[i].blendShapeLocation )
+            //{
+            //    case ARKitBlendShapeLocation.EyeBlinkLeft:
+            //        _avatar.SetEyeBlinkLeft( 1 - blendShapesARKit[i].coefficient );
+            //        break; ;
+            //    case ARKitBlendShapeLocation.EyeBlinkRight:
+            //        _avatar.SetEyeBlinkRight( 1 - blendShapesARKit[i].coefficient );
+            //        break;
+            //    case ARKitBlendShapeLocation.EyeLookInLeft:
+            //        _avatar.SetEyeLookHorizontal( -blendShapesARKit[i].coefficient );
+            //        msg += $"Look_L : {-blendShapesARKit[i].coefficient * 10f}\n";
+            //        break;
+            //    case ARKitBlendShapeLocation.EyeLookInRight:
+            //        _avatar.SetEyeLookHorizontal( blendShapesARKit[i].coefficient * 10f );
+            //        msg += $"Look_R : {blendShapesARKit[i].coefficient}";
+            //        break;
+            //    case ARKitBlendShapeLocation.EyeLookUpLeft:
+            //    case ARKitBlendShapeLocation.EyeLookUpRight:
+            //        _avatar.SetEyeLookVertical( -blendShapesARKit[i].coefficient );
+            //        break;
+            //    case ARKitBlendShapeLocation.EyeLookDownLeft:
+            //    case ARKitBlendShapeLocation.EyeLookDownRight:
+            //        _avatar.SetEyeLookVertical( blendShapesARKit[i].coefficient );
+            //        break;
+            //}
             switch( blendShapesARKit[i].blendShapeLocation )
             {
                 case ARKitBlendShapeLocation.EyeBlinkLeft:
-
                     _avatar.SetEyeBlinkLeft( 1 - blendShapesARKit[i].coefficient );
                     break; ;
                 case ARKitBlendShapeLocation.EyeBlinkRight:
                     _avatar.SetEyeBlinkRight( 1 - blendShapesARKit[i].coefficient );
                     break;
+
                 case ARKitBlendShapeLocation.EyeLookInLeft:
-                    _avatar.SetEyeLookHorizontal( -blendShapesARKit[i].coefficient );
-                    msg += $"Look_L : {-blendShapesARKit[i].coefficient}\n";
+                    leftEyeIn = blendShapesARKit[i].coefficient;
+                    msg += $"LookIn_L : {leftEyeIn}, ";
                     break;
                 case ARKitBlendShapeLocation.EyeLookInRight:
-                    _avatar.SetEyeLookHorizontal( blendShapesARKit[i].coefficient );
-                    msg += $"Look_R : {blendShapesARKit[i].coefficient}";
+                    rightEyeIn = blendShapesARKit[i].coefficient;
+                    msg += $"LookIn_R : {blendShapesARKit[i].coefficient}\n";
+                    break;
+                case ARKitBlendShapeLocation.EyeLookOutLeft:
+                    leftEyeOut = blendShapesARKit[i].coefficient;
+                    msg += $"LookOut_L : {leftEyeOut}, ";
+                    break;
+                case ARKitBlendShapeLocation.EyeLookOutRight:
+                    rightEyeOut = blendShapesARKit[i].coefficient;
+                    msg += $"LookOut_R : {blendShapesARKit[i].coefficient}\n";
                     break;
                 case ARKitBlendShapeLocation.EyeLookUpLeft:
                 case ARKitBlendShapeLocation.EyeLookUpRight:
@@ -109,6 +146,12 @@ public class FaceTracking : MonoBehaviour
                     _avatar.SetEyeLookVertical( blendShapesARKit[i].coefficient );
                     break;
             }
+            var leftEyeHorizontal = leftEyeOut - leftEyeIn;
+            var rightEyeHorizontal = rightEyeOut - rightEyeIn;
+            var overallHorizontal = ( leftEyeHorizontal + rightEyeHorizontal ) / 2;
+            msg += $"Result : {overallHorizontal}";
+
+            _avatar.SetEyeLookHorizontal( overallHorizontal );
         }
         _log.text = $"{msg}";
     }
