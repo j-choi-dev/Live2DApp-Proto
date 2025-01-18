@@ -10,8 +10,8 @@ using System;
 public class FaceTracking : MonoBehaviour
 {
     [SerializeField] private ARFaceManager faceManager;
-    [SerializeField] private TMP_Text _log;
-    [SerializeField] private TMP_Text _log2;
+    [SerializeField] private TMP_Text _logDetail;
+    [SerializeField] private TMP_Text _logResult;
     [SerializeField] private TMP_Text _log3;
     [SerializeField] private StudioAvatar _avatar;
 
@@ -20,8 +20,8 @@ public class FaceTracking : MonoBehaviour
     private void Awake()
     {
         Application.targetFrameRate = 60;
-        _log.text = Vector3.zero.ToString();
-        Debug.Log( Vector3.zero );
+        _logDetail.text = Vector3.zero.ToString();
+        _logResult.text = Vector3.zero.ToString();
     }
 
     private void OnEnable()
@@ -84,6 +84,8 @@ public class FaceTracking : MonoBehaviour
         var leftEyeOut = 0f;
         var rightEyeIn = 0f;
         var rightEyeOut = 0f;
+        var leftEyeHorizontal = 0f;
+        var rightEyeHorizontal = 0f;
         var horizontalResult = 0f;
         for(var i=0; i<blendShapesARKit.Length; i++ )
         {
@@ -142,14 +144,19 @@ public class FaceTracking : MonoBehaviour
                     _avatar.SetEyeLookVertical( blendShapesARKit[i].coefficient );
                     break;
             }
-            var leftEyeHorizontal = leftEyeOut - leftEyeIn;
-            var rightEyeHorizontal = rightEyeOut - rightEyeIn;
+            leftEyeHorizontal = leftEyeOut - leftEyeIn;
+            rightEyeHorizontal = rightEyeOut - rightEyeIn;
             horizontalResult = ( leftEyeHorizontal + rightEyeHorizontal ) / 2f;
 
             _avatar.SetEyeLookHorizontal( horizontalResult );
-            _log.text = $"I_L : {leftEyeIn.ToString( "#.###" )}, I_R : {rightEyeIn.ToString( "#.###" )}\nO_L : {leftEyeOut.ToString( "#.###" )}, O_R : {rightEyeOut.ToString( "#.###" )}";
-            _log2.text = $"horizontalResult = {horizontalResult}";
         }
+        var il = string.IsNullOrEmpty( leftEyeIn.ToString( "#.###" ) ) ? "0.0" : leftEyeIn.ToString( "#.###" );
+        var ir = string.IsNullOrEmpty( rightEyeIn.ToString( "#.###" ) ) ? "0.0" : rightEyeIn.ToString( "#.###" );
+        var ol = string.IsNullOrEmpty( leftEyeOut.ToString( "#.###" ) ) ? "0.0" : leftEyeOut.ToString( "#.###" );
+        var or = string.IsNullOrEmpty( rightEyeOut.ToString( "#.###" ) ) ? "0.0" : rightEyeOut.ToString( "#.###" );
+        var result = string.IsNullOrEmpty( horizontalResult.ToString("#.###") ) ? "0.0" : horizontalResult.ToString( "#.###" );
+        _logDetail.text = $"I_L : {il}, I_R : {ir}\nO_L : {ol}, O_R : {or}";
+        _logResult.text = $"horizontalResult = {result}";
     }
 
     /// <summary>
@@ -190,7 +197,7 @@ public class FaceTracking : MonoBehaviour
 
     private void Update()
     {
-        _log2.text = _avatar.AvatarLog;
+        //_logResult.text = _avatar.AvatarLog;
         _log3.text = _avatar.AvatarMsg;
     }
 }
