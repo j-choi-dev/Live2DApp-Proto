@@ -78,7 +78,6 @@ public class FaceTracking : MonoBehaviour
     /// <param name="arFace">ARFace 정보</param>
     private void UpdateEyeBlendShape( ARFace arFace )
     {
-        var msg = string.Empty;
         _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
         using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
         var leftEyeIn = 0f;
@@ -146,12 +145,11 @@ public class FaceTracking : MonoBehaviour
             var leftEyeHorizontal = leftEyeOut - leftEyeIn;
             var rightEyeHorizontal = rightEyeOut - rightEyeIn;
             horizontalResult = ( leftEyeHorizontal + rightEyeHorizontal ) / 2f;
-            msg += $"LI_L : {leftEyeIn}, LI_R : {rightEyeIn}\nLO_L : {leftEyeOut}, LO_R : {rightEyeOut}";
 
             _avatar.SetEyeLookHorizontal( horizontalResult );
+            _log.text = $"I_L : {leftEyeIn.ToString( "#.###" )}, I_R : {rightEyeIn.ToString( "#.###" )}\nO_L : {leftEyeOut.ToString( "#.###" )}, O_R : {rightEyeOut.ToString( "#.###" )}";
+            _log2.text = $"horizontalResult = {horizontalResult}";
         }
-        _log.text = $"LI_L : {leftEyeIn}, LI_R : {rightEyeIn}\nLO_L : {leftEyeOut}, LO_R : {rightEyeOut}";
-        _log2.text = $"{horizontalResult}";
     }
 
     /// <summary>
