@@ -5,6 +5,7 @@ using UnityEngine.XR.ARKit;
 using Unity.Collections;
 using TMPro;
 using AvatarStstem;
+using Live2D.Cubism.Core;
 
 public class FaceTracking : MonoBehaviour
 {
@@ -47,6 +48,7 @@ public class FaceTracking : MonoBehaviour
             {
                 UpdateFaceTransform( arFace );
                 UpdateEyeBlendShape( arFace );
+                UpdateLive2DWithARKitData( arFace );
                 UpdateMouthBlendShape( arFace );
             }
         }
@@ -79,13 +81,7 @@ public class FaceTracking : MonoBehaviour
     {
         _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
         using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
-        var leftEyeIn = 0f;
-        var leftEyeOut = 0f;
-        var rightEyeIn = 0f;
-        var rightEyeOut = 0f;
-        var leftEyeHorizontal = 0f;
-        var rightEyeHorizontal = 0f;
-        var horizontalResult = 0f;
+
         for(var i=0; i<blendShapesARKit.Length; i++ )
         {
             switch( blendShapesARKit[i].blendShapeLocation )
@@ -97,18 +93,18 @@ public class FaceTracking : MonoBehaviour
                     _avatar.SetEyeBlinkRight( 1 - blendShapesARKit[i].coefficient );
                     break;
 
-                case ARKitBlendShapeLocation.EyeLookInLeft:
-                    leftEyeIn = blendShapesARKit[i].coefficient;
-                    break;
-                case ARKitBlendShapeLocation.EyeLookInRight:
-                    rightEyeIn = blendShapesARKit[i].coefficient;
-                    break;
-                case ARKitBlendShapeLocation.EyeLookOutLeft:
-                    leftEyeOut = blendShapesARKit[i].coefficient;
-                    break;
-                case ARKitBlendShapeLocation.EyeLookOutRight:
-                    rightEyeOut = blendShapesARKit[i].coefficient;
-                    break;
+                //case ARKitBlendShapeLocation.EyeLookInLeft:
+                //    leftEyeIn = blendShapesARKit[i].coefficient;
+                //    break;
+                //case ARKitBlendShapeLocation.EyeLookInRight:
+                //    rightEyeIn = blendShapesARKit[i].coefficient;
+                //    break;
+                //case ARKitBlendShapeLocation.EyeLookOutLeft:
+                //    leftEyeOut = blendShapesARKit[i].coefficient;
+                //    break;
+                //case ARKitBlendShapeLocation.EyeLookOutRight:
+                //    rightEyeOut = blendShapesARKit[i].coefficient;
+                //    break;
                 case ARKitBlendShapeLocation.EyeLookUpLeft:
                 case ARKitBlendShapeLocation.EyeLookUpRight:
                     _avatar.SetEyeLookVertical( -blendShapesARKit[i].coefficient );
@@ -118,21 +114,51 @@ public class FaceTracking : MonoBehaviour
                     _avatar.SetEyeLookVertical( blendShapesARKit[i].coefficient );
                     break;
             }
-            leftEyeHorizontal = leftEyeOut - leftEyeIn;
-            rightEyeHorizontal = rightEyeOut - rightEyeIn;
-            horizontalResult = ( leftEyeHorizontal + rightEyeHorizontal ) / 2f;
-            horizontalResult *= 10f;
-
-            _avatar.SetEyeLookHorizontal( horizontalResult );
         }
-        // TODO 임시 변수 -> 동작확인이 끝나는 타이밍에 삭제할 것 @Choi 25.01.16
-        var il = string.IsNullOrEmpty( leftEyeIn.ToString( "0.###" ) ) ? "0.0" : leftEyeIn.ToString( "0.###" );
-        var ir = string.IsNullOrEmpty( rightEyeIn.ToString( "0.###" ) ) ? "0.0" : rightEyeIn.ToString( "0.###" );
-        var ol = string.IsNullOrEmpty( leftEyeOut.ToString( "0.###" ) ) ? "0.0" : leftEyeOut.ToString( "0.###" );
-        var or = string.IsNullOrEmpty( rightEyeOut.ToString( "0.###" ) ) ? "0.0" : rightEyeOut.ToString( "0.###" );
-        var result = string.IsNullOrEmpty( horizontalResult.ToString("0.###") ) ? "0.0" : horizontalResult.ToString( "0.###" );
-        _logDetail.text = $"I_L : {il}, I_R : {ir}\nO_L : {ol}, O_R : {or}";
-        _logResult.text = $"horizontalResult = {result}";
+    }
+
+    private void UpdateLive2DWithARKitData( ARFace arFace )
+    {
+        var eyeLookInLeft = 0f;
+        var eyeLookOutLeft = 0f;
+        var eyeLookInRight = 0f;
+        var eyeLookOutRight = 0f;
+
+        if( arFace == null || _avatar == null ) return;
+
+        // ARKit의 BlendShape 데이터 가져오기
+        var blendShapes = _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
+        using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
+
+        for( var i = 0; i<blendShapesARKit.Length; i++ )
+        {
+            switch( blendShapesARKit[i].blendShapeLocation )
+            {
+                case ARKitBlendShapeLocation.EyeLookInLeft:
+                    eyeLookInLeft = blendShapesARKit[i].coefficient;
+                    break;
+                case ARKitBlendShapeLocation.EyeLookInRight:
+                    eyeLookInRight = blendShapesARKit[i].coefficient;
+                    break;
+                case ARKitBlendShapeLocation.EyeLookOutLeft:
+                    eyeLookOutLeft = blendShapesARKit[i].coefficient;
+                    break;
+                case ARKitBlendShapeLocation.EyeLookOutRight:
+                    eyeLookOutRight = blendShapesARKit[i].coefficient;
+                    break;
+            }
+        }
+        var eyeBallXValue = ( eyeLookOutLeft - eyeLookInLeft + eyeLookInRight - eyeLookOutRight ) / 2.0f;
+        var xValue = Mathf.Clamp( eyeBallXValue, -1.0f, 1.0f );
+        var lol = string.IsNullOrEmpty( eyeLookInLeft.ToString( "F3" ) ) ? "0.0" : eyeLookInLeft.ToString( "F3" );
+        var lil = string.IsNullOrEmpty( eyeLookInLeft.ToString( "F3" ) ) ? "0.0" : eyeLookInLeft.ToString( "F3" );
+        var lor = string.IsNullOrEmpty( eyeLookOutRight.ToString( "F3" ) ) ? "0.0" : eyeLookOutRight.ToString( "F3" );
+        var lir = string.IsNullOrEmpty( eyeLookInRight.ToString( "F3" ) ) ? "0.0" : eyeLookInRight.ToString( "F3" );
+        var xv = string.IsNullOrEmpty( xValue.ToString( "F3" ) ) ? "0.0" : xValue.ToString( "F3" );
+        var result = string.IsNullOrEmpty( xValue.ToString( "F3" ) ) ? "0.0" : xValue.ToString( "F3" );
+        _logDetail.text = $"O_L : {lol}, I_L : {lil}\nO_R : {lor}, I_R : {lir}";
+        _logResult.text = $"xValue = {xv}, result = {result} ";
+        _avatar.SetEyeLookHorizontal( xValue );
     }
 
     /// <summary>
