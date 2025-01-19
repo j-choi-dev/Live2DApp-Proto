@@ -6,6 +6,8 @@ using Unity.Collections;
 using TMPro;
 using AvatarStstem;
 using Live2D.Cubism.Core;
+using System.Security.AccessControl;
+using Live2D.Cubism.Framework.Json;
 
 public class FaceTracking : MonoBehaviour
 {
@@ -48,7 +50,7 @@ public class FaceTracking : MonoBehaviour
             {
                 UpdateFaceTransform( arFace );
                 UpdateEyeBlendShape( arFace );
-                UpdateLive2DWithARKitData( arFace );
+                UpdateEyeBallDirection( arFace );
                 UpdateMouthBlendShape( arFace );
             }
         }
@@ -93,18 +95,6 @@ public class FaceTracking : MonoBehaviour
                     _avatar.SetEyeBlinkRight( 1 - blendShapesARKit[i].coefficient );
                     break;
 
-                //case ARKitBlendShapeLocation.EyeLookInLeft:
-                //    leftEyeIn = blendShapesARKit[i].coefficient;
-                //    break;
-                //case ARKitBlendShapeLocation.EyeLookInRight:
-                //    rightEyeIn = blendShapesARKit[i].coefficient;
-                //    break;
-                //case ARKitBlendShapeLocation.EyeLookOutLeft:
-                //    leftEyeOut = blendShapesARKit[i].coefficient;
-                //    break;
-                //case ARKitBlendShapeLocation.EyeLookOutRight:
-                //    rightEyeOut = blendShapesARKit[i].coefficient;
-                //    break;
                 case ARKitBlendShapeLocation.EyeLookUpLeft:
                 case ARKitBlendShapeLocation.EyeLookUpRight:
                     _avatar.SetEyeLookVertical( -blendShapesARKit[i].coefficient );
@@ -117,12 +107,17 @@ public class FaceTracking : MonoBehaviour
         }
     }
 
-    private void UpdateLive2DWithARKitData( ARFace arFace )
+    private void UpdateEyeBallDirection( ARFace arFace )
     {
         var eyeLookInLeft = 0f;
         var eyeLookOutLeft = 0f;
         var eyeLookInRight = 0f;
         var eyeLookOutRight = 0f;
+
+        var eyeLookUpLeft = 0f;
+        var eyeLookDownLeft = 0f;
+        var eyeLookUpRight = 0f;
+        var eyeLookDownRight = 0f;
 
         if( arFace == null || _avatar == null ) return;
 
@@ -134,6 +129,12 @@ public class FaceTracking : MonoBehaviour
         {
             switch( blendShapesARKit[i].blendShapeLocation )
             {
+                case ARKitBlendShapeLocation.EyeLookDownLeft:
+                    eyeLookDownLeft = blendShapesARKit[i].coefficient;
+                    break;
+                case ARKitBlendShapeLocation.EyeLookDownRight:
+                    eyeLookDownRight = blendShapesARKit[i].coefficient;
+                    break;
                 case ARKitBlendShapeLocation.EyeLookInLeft:
                     eyeLookInLeft = blendShapesARKit[i].coefficient;
                     break;
@@ -146,19 +147,24 @@ public class FaceTracking : MonoBehaviour
                 case ARKitBlendShapeLocation.EyeLookOutRight:
                     eyeLookOutRight = blendShapesARKit[i].coefficient;
                     break;
+                case ARKitBlendShapeLocation.EyeLookUpLeft:
+                    eyeLookUpLeft = blendShapesARKit[i].coefficient;
+                    break;
+                case ARKitBlendShapeLocation.EyeLookUpRight:
+                    eyeLookUpRight = blendShapesARKit[i].coefficient;
+                    break;
             }
         }
         var eyeBallXValue = ( eyeLookOutLeft - eyeLookInLeft + eyeLookInRight - eyeLookOutRight ) / 2.0f;
-        var xValue = Mathf.Clamp( eyeBallXValue, -1.0f, 1.0f );
-        var lol = string.IsNullOrEmpty( eyeLookInLeft.ToString( "F3" ) ) ? "0.0" : eyeLookInLeft.ToString( "F3" );
-        var lil = string.IsNullOrEmpty( eyeLookInLeft.ToString( "F3" ) ) ? "0.0" : eyeLookInLeft.ToString( "F3" );
-        var lor = string.IsNullOrEmpty( eyeLookOutRight.ToString( "F3" ) ) ? "0.0" : eyeLookOutRight.ToString( "F3" );
-        var lir = string.IsNullOrEmpty( eyeLookInRight.ToString( "F3" ) ) ? "0.0" : eyeLookInRight.ToString( "F3" );
-        var xv = string.IsNullOrEmpty( xValue.ToString( "F3" ) ) ? "0.0" : xValue.ToString( "F3" );
-        var result = string.IsNullOrEmpty( xValue.ToString( "F3" ) ) ? "0.0" : xValue.ToString( "F3" );
-        _logDetail.text = $"O_L : {lol}, I_L : {lil}\nO_R : {lor}, I_R : {lir}";
-        _logResult.text = $"xValue = {xv}, result = {result} ";
-        _avatar.SetEyeLookHorizontal( xValue );
+        var eyeBallYValue = ( eyeLookUpLeft - eyeLookDownLeft + eyeLookUpRight - eyeLookDownRight ) / 2.0f;
+
+        var resultX = Mathf.Clamp( eyeBallXValue, -1f, 1f );
+        var resultY = Mathf.Clamp( eyeBallXValue, -1f, 1f );
+
+        _logDetail.text = $"{GetTempLogMessageForEyeBalls( eyeLookOutLeft, eyeLookInLeft, eyeLookOutRight, eyeLookInRight )}\n{GetTempLogMessageForEyeBallResult( eyeBallXValue, resultX )}";
+        _logResult.text = $"{GetTempLogMessageForEyeBalls( eyeLookUpLeft, eyeLookDownLeft, eyeLookUpRight, eyeLookDownRight )}\n{GetTempLogMessageForEyeBallResult( eyeBallYValue, resultY )}";
+
+        _avatar.SetEyeLookHorizontal( resultX );
     }
 
     /// <summary>
@@ -196,5 +202,13 @@ public class FaceTracking : MonoBehaviour
         }
         return angle;
     }
+
+    private string GetTempLogMessageForEyeBalls(float valL1 , float valL2, float valR1, float valR2 )
+        => $"外視L : {GetFormatedStringByFloat( valL1 )}, 内視L : {GetFormatedStringByFloat( valL2 )}\n外視R : {GetFormatedStringByFloat( valR1 )}, 内視R : {GetFormatedStringByFloat( valR2 )}";
+    private string GetTempLogMessageForEyeBallResult( float raw, float result )
+        => $"raw = {GetFormatedStringByFloat( raw )}\nresult = {GetFormatedStringByFloat( result )} ";
+
+    private string GetFormatedStringByFloat(float val)
+        => string.IsNullOrEmpty( val.ToString( "F2" ) ) ? "0.0" : val.ToString( "F2" );
 }
 
