@@ -43,10 +43,7 @@ namespace AvatarStstem
         // 입술 정보 멤버변수
         private float _updateMouthForm;
         private float _updateMouthOpen;
-        
-        // TODO 임시 변수 -> 동작확인이 끝나는 타이밍에 삭제할 것 @Choi 25.01.16
-        public string AvatarMsg { get; private set; } = string.Empty;
-        public string AvatarLog { get; private set; } = string.Empty;
+
         public bool IsInitialized => _isInitialized;
 
 
@@ -77,8 +74,6 @@ namespace AvatarStstem
 
             _eyeBallX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallX].parameter.Id );
             _eyeBallY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallY].parameter.Id );
-            AvatarMsg = $"{_eyeBallX.Id}, {_eyeBallY.Id}";
-            Debug.Log( AvatarMsg );            
         }
 
         public void SetFaceAngleX( float value ) => _updateFaceAngleX = value;
@@ -97,25 +92,17 @@ namespace AvatarStstem
         {
             if (_isInitialized == false)
             {
-                AvatarMsg = string.Empty;
-                AvatarLog = string.Empty;
                 return;
             }
             _faceAngleX.Value = _updateFaceAngleX;
             _faceAngleY.Value = _updateFaceAngleY;
             _faceAngleZ.Value = _updateFaceAngleZ;
-            AvatarLog = $"{_faceAngleX.Value.ToString( "#.##" )}, {_faceAngleY.Value.ToString( "#.##" )}, {_faceAngleZ.Value.ToString( "#.##" )}";
 
             _leftEyeBlink.Value = _updateLeftEye;
             _rightEyeBlink.Value = _updateRightEye;
-            AvatarLog += $"\n{_leftEyeBlink.Value.ToString( "#.##" )}, {_rightEyeBlink.Value.ToString( "#.##" )}";
 
             _eyeBallX.Value = _updateEyeballX;
             _eyeBallY.Value = _updateEyeballY;
-            AvatarLog += $"\n{_eyeBallX.Value.ToString( "#.##" )}, {_eyeBallY.Value.ToString( "#.##" )}";
-            //_mouthForm.Value = _updateMouthForm;
-            //_mouthOpen.Value = _updateMouthOpen;
-            AvatarLog = string.Empty;
         }
     }
 }

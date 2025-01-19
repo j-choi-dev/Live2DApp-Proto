@@ -5,7 +5,6 @@ using UnityEngine.XR.ARKit;
 using Unity.Collections;
 using TMPro;
 using AvatarStstem;
-using System;
 
 public class FaceTracking : MonoBehaviour
 {
@@ -89,31 +88,6 @@ public class FaceTracking : MonoBehaviour
         var horizontalResult = 0f;
         for(var i=0; i<blendShapesARKit.Length; i++ )
         {
-            //switch( blendShapesARKit[i].blendShapeLocation )
-            //{
-            //    case ARKitBlendShapeLocation.EyeBlinkLeft:
-            //        _avatar.SetEyeBlinkLeft( 1 - blendShapesARKit[i].coefficient );
-            //        break; ;
-            //    case ARKitBlendShapeLocation.EyeBlinkRight:
-            //        _avatar.SetEyeBlinkRight( 1 - blendShapesARKit[i].coefficient );
-            //        break;
-            //    case ARKitBlendShapeLocation.EyeLookInLeft:
-            //        _avatar.SetEyeLookHorizontal( -blendShapesARKit[i].coefficient );
-            //        msg += $"Look_L : {-blendShapesARKit[i].coefficient * 10f}\n";
-            //        break;
-            //    case ARKitBlendShapeLocation.EyeLookInRight:
-            //        _avatar.SetEyeLookHorizontal( blendShapesARKit[i].coefficient * 10f );
-            //        msg += $"Look_R : {blendShapesARKit[i].coefficient}";
-            //        break;
-            //    case ARKitBlendShapeLocation.EyeLookUpLeft:
-            //    case ARKitBlendShapeLocation.EyeLookUpRight:
-            //        _avatar.SetEyeLookVertical( -blendShapesARKit[i].coefficient );
-            //        break;
-            //    case ARKitBlendShapeLocation.EyeLookDownLeft:
-            //    case ARKitBlendShapeLocation.EyeLookDownRight:
-            //        _avatar.SetEyeLookVertical( blendShapesARKit[i].coefficient );
-            //        break;
-            //}
             switch( blendShapesARKit[i].blendShapeLocation )
             {
                 case ARKitBlendShapeLocation.EyeBlinkLeft:
@@ -147,14 +121,16 @@ public class FaceTracking : MonoBehaviour
             leftEyeHorizontal = leftEyeOut - leftEyeIn;
             rightEyeHorizontal = rightEyeOut - rightEyeIn;
             horizontalResult = ( leftEyeHorizontal + rightEyeHorizontal ) / 2f;
+            horizontalResult *= 10f;
 
             _avatar.SetEyeLookHorizontal( horizontalResult );
         }
-        var il = string.IsNullOrEmpty( leftEyeIn.ToString( "#.###" ) ) ? "0.0" : leftEyeIn.ToString( "#.###" );
-        var ir = string.IsNullOrEmpty( rightEyeIn.ToString( "#.###" ) ) ? "0.0" : rightEyeIn.ToString( "#.###" );
-        var ol = string.IsNullOrEmpty( leftEyeOut.ToString( "#.###" ) ) ? "0.0" : leftEyeOut.ToString( "#.###" );
-        var or = string.IsNullOrEmpty( rightEyeOut.ToString( "#.###" ) ) ? "0.0" : rightEyeOut.ToString( "#.###" );
-        var result = string.IsNullOrEmpty( horizontalResult.ToString("#.###") ) ? "0.0" : horizontalResult.ToString( "#.###" );
+        // TODO 임시 변수 -> 동작확인이 끝나는 타이밍에 삭제할 것 @Choi 25.01.16
+        var il = string.IsNullOrEmpty( leftEyeIn.ToString( "0.###" ) ) ? "0.0" : leftEyeIn.ToString( "0.###" );
+        var ir = string.IsNullOrEmpty( rightEyeIn.ToString( "0.###" ) ) ? "0.0" : rightEyeIn.ToString( "0.###" );
+        var ol = string.IsNullOrEmpty( leftEyeOut.ToString( "0.###" ) ) ? "0.0" : leftEyeOut.ToString( "0.###" );
+        var or = string.IsNullOrEmpty( rightEyeOut.ToString( "0.###" ) ) ? "0.0" : rightEyeOut.ToString( "0.###" );
+        var result = string.IsNullOrEmpty( horizontalResult.ToString("0.###") ) ? "0.0" : horizontalResult.ToString( "0.###" );
         _logDetail.text = $"I_L : {il}, I_R : {ir}\nO_L : {ol}, O_R : {or}";
         _logResult.text = $"horizontalResult = {result}";
     }
@@ -193,12 +169,6 @@ public class FaceTracking : MonoBehaviour
             return angle - 360;
         }
         return angle;
-    }
-
-    private void Update()
-    {
-        //_logResult.text = _avatar.AvatarLog;
-        _log3.text = _avatar.AvatarMsg;
     }
 }
 
