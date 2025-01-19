@@ -165,6 +165,7 @@ public class FaceTracking : MonoBehaviour
         _logResult.text = $"{GetTempLogMessageForEyeBalls( eyeLookUpLeft, eyeLookDownLeft, eyeLookUpRight, eyeLookDownRight )}\n{GetTempLogMessageForEyeBallResult( eyeBallYValue, resultY )}";
 
         _avatar.SetEyeLookHorizontal( resultX );
+        _avatar.SetEyeLookVertical( resultY );
     }
 
     /// <summary>
