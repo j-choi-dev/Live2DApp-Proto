@@ -6657,8 +6657,13 @@ GameObject:
   - component: {fileID: 8436776813629137306}
   - component: {fileID: 7649975749112828119}
   - component: {fileID: 4966488889279855458}
-  - component: {fileID: 8178835033284154990}
+  - component: {fileID: 7713093690178148302}
+  - component: {fileID: 6509621911427598745}
+  - component: {fileID: 3224918730994457166}
+  - component: {fileID: 3621607590184189498}
   - component: {fileID: 232717635295466586}
+  - component: {fileID: 7862945828956242837}
+  - component: {fileID: 8178835033284154990}
   m_Layer: 0
   m_Name: hiyori_free_t08
   m_TagString: Untagged
@@ -6697,6 +6702,52 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moc: {fileID: 11400000, guid: b711fe7689583734692acded831ea2cb, type: 2}
+  _parameters:
+  - {fileID: 2985168521320945200}
+  - {fileID: 1596548779758986066}
+  - {fileID: 2684654045358694844}
+  - {fileID: 2457135603677770832}
+  - {fileID: 3273743560313559921}
+  - {fileID: 3668472369828305789}
+  - {fileID: 1235188332471142633}
+  - {fileID: 8762709104497543400}
+  - {fileID: 6737065339531314396}
+  - {fileID: 1722093916973998092}
+  - {fileID: 6599673335450669338}
+  - {fileID: 8172761624626442999}
+  - {fileID: 1815316429042558446}
+  - {fileID: 8479030419492369810}
+  - {fileID: 3899538125754585866}
+  - {fileID: 4189072633158614239}
+  - {fileID: 5711258616274958262}
+  - {fileID: 3205954423078204738}
+  - {fileID: 3873446070446680381}
+  - {fileID: 5100638955996914898}
+  - {fileID: 5715647557449237782}
+  - {fileID: 208302457172004646}
+  - {fileID: 7033003724073248288}
+  - {fileID: 8072534686688807905}
+  - {fileID: 4452509706542810744}
+  - {fileID: 4122417784969234448}
+  - {fileID: 1537122929216044409}
+  - {fileID: 4216842787632732040}
+  - {fileID: 9215048029890539092}
+  _parts:
+  - {fileID: 5675436824809153258}
+  - {fileID: 5864884952011046188}
+  - {fileID: 4122480971100163445}
+  - {fileID: 2574836464295044632}
+  - {fileID: 3760697361953533567}
+  - {fileID: 5069664092344825691}
+  - {fileID: 427512346989310653}
+  - {fileID: 2047525792013528450}
+  - {fileID: 8749879104457791721}
+  - {fileID: 2122514740610712526}
+  - {fileID: 6510409762398442142}
+  - {fileID: 590848304363064085}
+  - {fileID: 5622993638506775853}
+  - {fileID: 1061332319490045876}
+  - {fileID: 8734511515676415372}
 --- !u!114 &7773743930940863960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6800,7 +6851,93 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 967223d908bf07b4f90945995bdca68f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maskTexture: {fileID: 11400000, guid: 16bf142754640ab4487bb625c30931fd, type: 2}
+  _maskTexture: {fileID: 0}
+--- !u!114 &7713093690178148302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4160296186305825193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 702f05e81266375468e2b47006338cf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6509621911427598745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4160296186305825193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e23066d7f6cfa354d91d0033239622a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3224918730994457166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4160296186305825193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e1a8413ad039d7408cc5d00cde529a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultPoseIndex: 0
+--- !u!114 &3621607590184189498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4160296186305825193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b893d4d32dd60bc4c9a2e447d31c6e88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ExpressionsList: {fileID: 0}
+  UseLegacyBlendCalculation: 0
+  CurrentExpressionIndex: -1
+--- !u!95 &232717635295466586
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4160296186305825193}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7862945828956242837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4160296186305825193}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cd9e6647bfff7542acb0200ab74bdd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CubismFadeMotionList: {fileID: 11400000, guid: c91df09d8fade17489fd517438e8beb2, type: 2}
 --- !u!114 &8178835033284154990
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7172,27 +7309,6 @@ MonoBehaviour:
     Gravity: {x: 0, y: -1}
     Wind: {x: 0, y: 0}
     Fps: 0
---- !u!95 &232717635295466586
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4160296186305825193}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: f76c43a47c449094cb277d16c9a8bf99, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &4174112280036335233
 GameObject:
   m_ObjectHideFlags: 0

@@ -101,6 +101,8 @@ namespace Live2D.Cubism.Core
             private set { _moc = value; }
         }
 
+        public void SetCubismMoc(CubismMoc moc) => _moc = moc;
+
 
         /// <summary>
         /// TaskableModel for unmanaged backend.
@@ -111,12 +113,13 @@ namespace Live2D.Cubism.Core
         /// <summary>
         /// <see cref="Parameters"/> backing field.
         /// </summary>
-        [NonSerialized]
-        private CubismParameter[] _parameters;
+        //[NonSerialized]
+        public CubismParameter[] _parameters;
 
         /// <summary>
         /// Drawables of model.
         /// </summary>
+        [SerializeField]
         public CubismParameter[] Parameters
         {
             get
@@ -135,12 +138,13 @@ namespace Live2D.Cubism.Core
         /// <summary>
         /// <see cref="Parts"/> backing field.
         /// </summary>
-        [NonSerialized]
-        private CubismPart[] _parts;
+        //[NonSerialized]
+        public CubismPart[] _parts;
 
         /// <summary>
         /// Drawables of model.
         /// </summary>
+        [SerializeField]
         public CubismPart[] Parts
         {
             get
@@ -160,7 +164,7 @@ namespace Live2D.Cubism.Core
         /// <see cref="Drawables"/> backing field.
         /// </summary>
         [NonSerialized]
-        private CubismDrawable[] _drawables;
+        public CubismDrawable[] _drawables;
 
         /// <summary>
         /// Drawables of model.

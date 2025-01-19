@@ -1,51 +1,26 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
-using Live2D.Cubism.Core;
 using UnityEngine.XR.ARKit;
 using Unity.Collections;
 using TMPro;
+using AvatarStstem;
 
 public class FaceTracking : MonoBehaviour
 {
     [SerializeField] private ARFaceManager faceManager;
-    [SerializeField] private TMP_Text _log;
-    [SerializeField] private GameObject _avatarPrefab;
+    [SerializeField] private TMP_Text _logDetail;
+    [SerializeField] private TMP_Text _logResult;
+    [SerializeField] private TMP_Text _log3;
+    [SerializeField] private StudioAvatar _avatar;
 
-    private CubismModel _live2DModel;
     private ARKitFaceSubsystem _faceSubsystem;
-
-    // Live2D 파라미터 멤버변수
-    private CubismParameter _faceAngleX;
-    private CubismParameter _faceAngleY;
-    private CubismParameter _faceAngleZ;
-    private CubismParameter _bodyAngleX;
-    private CubismParameter _bodyAngleY;
-    private CubismParameter _leftEyeBlink;
-    private CubismParameter _rightEyeBlink;
-    private CubismParameter _mouthForm;
-    private CubismParameter _mouthOpen;
-
-    // 얼굴 회전값 멤버변수
-    private float _updateFaceAngleX;
-    private float _updateFaceAngleY;
-    private float _updateFaceAngleZ;
-
-    // 눈동자 정보 멤버변수
-    private float _updateLeftEye;
-    private float _updateRightEye;
-
-    // 입술 정보 멤버변수
-    private float _updateMouthForm;
-    private float _updateMouthOpen;
 
     private void Awake()
     {
         Application.targetFrameRate = 60;
-        _log.text = Vector3.zero.ToString();
-        _live2DModel = _avatarPrefab.GetComponent<CubismModel>();
-        InitCubismParameter( _live2DModel );
-        Debug.Log( Vector3.zero );
+        _logDetail.text = Vector3.zero.ToString();
+        _logResult.text = Vector3.zero.ToString();
     }
 
     private void OnEnable()
@@ -56,22 +31,6 @@ public class FaceTracking : MonoBehaviour
     private void OnDisable()
     {
         faceManager.facesChanged -= OnFaceChanged;
-    }
-
-    private void LateUpdate()
-    {
-        // 표정 : 눈
-        _leftEyeBlink.Value = _updateLeftEye;
-        _rightEyeBlink.Value = _updateRightEye;
-
-        // 표정 : 입
-        _mouthForm.Value = _updateMouthForm;
-        _mouthOpen.Value = _updateMouthOpen;
-
-        // 얼굴 방향
-        _faceAngleX.Value = _updateFaceAngleX;
-        _faceAngleY.Value = _updateFaceAngleY;
-        _faceAngleZ.Value = _updateFaceAngleZ;
     }
 
     /// <summary>
@@ -87,32 +46,10 @@ public class FaceTracking : MonoBehaviour
                 && ( ARSession.state > ARSessionState.Ready ) )
             {
                 UpdateFaceTransform( arFace );
-                UpdateBlendShape( arFace );
-
-                // TODO 삭제 대상 @Choi 25.01.05
-                Debug.Log( arFace.transform.position );
+                UpdateEyeBlendShape( arFace );
+                UpdateMouthBlendShape( arFace );
             }
         }
-    }
-
-    /// <summary>
-    /// 아바타의 모션 정보를 멤버 변수에 대입
-    /// </summary>
-    /// <param name="model"></param>
-    private void InitCubismParameter( CubismModel model )
-    {
-        _faceAngleX = model.Parameters[0];
-        _faceAngleY = model.Parameters[1];
-        _faceAngleZ = model.Parameters[2];
-
-        _bodyAngleX = model.Parameters[22];
-        _bodyAngleY = model.Parameters[23];
-
-        _leftEyeBlink = model.Parameters[4];
-        _rightEyeBlink = model.Parameters[6];
-
-        _mouthForm = model.Parameters[17];
-        _mouthOpen = model.Parameters[18];
     }
 
     /// <summary>
@@ -124,42 +61,98 @@ public class FaceTracking : MonoBehaviour
         // 얼굴의 위치 정보 취득
         var faceRotation = arFace.transform.rotation;
 
-        var x = NormalizeAngle( faceRotation.eulerAngles.x ) * 2f * -1f;
+        var x = NormalizeAngle( faceRotation.eulerAngles.x ) * 2f;
         var y = NormalizeAngle( faceRotation.eulerAngles.y );
         var z = NormalizeAngle( faceRotation.eulerAngles.z ) * 2f;
 
         // 새로운 얼굴 회전값을 변수에 대입
-        _updateFaceAngleX = y;
-        _updateFaceAngleY = x;
-        _updateFaceAngleZ = z;
+        _avatar.SetFaceAngleX( y );
+        _avatar.SetFaceAngleY( x );
+        _avatar.SetFaceAngleZ( z );
     }
 
     /// <summary>
     /// 표정 정보를 변경
     /// </summary>
     /// <param name="arFace">ARFace 정보</param>
-    private void UpdateBlendShape( ARFace arFace )
+    private void UpdateEyeBlendShape( ARFace arFace )
     {
         _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
         using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
+        var leftEyeIn = 0f;
+        var leftEyeOut = 0f;
+        var rightEyeIn = 0f;
+        var rightEyeOut = 0f;
+        var leftEyeHorizontal = 0f;
+        var rightEyeHorizontal = 0f;
+        var horizontalResult = 0f;
         for(var i=0; i<blendShapesARKit.Length; i++ )
         {
             switch( blendShapesARKit[i].blendShapeLocation )
             {
                 case ARKitBlendShapeLocation.EyeBlinkLeft:
-                    _updateLeftEye = 1 - blendShapesARKit[i].coefficient;
-                    _log.text = $"L_Eye : {_updateLeftEye}";
-                    continue;
+                    _avatar.SetEyeBlinkLeft( 1 - blendShapesARKit[i].coefficient );
+                    break; ;
                 case ARKitBlendShapeLocation.EyeBlinkRight:
-                    _updateRightEye = 1 - blendShapesARKit[i].coefficient;
-                    _log.text = $"R_Eye : {_updateRightEye}";
-                    continue;
+                    _avatar.SetEyeBlinkRight( 1 - blendShapesARKit[i].coefficient );
+                    break;
+
+                case ARKitBlendShapeLocation.EyeLookInLeft:
+                    leftEyeIn = blendShapesARKit[i].coefficient;
+                    break;
+                case ARKitBlendShapeLocation.EyeLookInRight:
+                    rightEyeIn = blendShapesARKit[i].coefficient;
+                    break;
+                case ARKitBlendShapeLocation.EyeLookOutLeft:
+                    leftEyeOut = blendShapesARKit[i].coefficient;
+                    break;
+                case ARKitBlendShapeLocation.EyeLookOutRight:
+                    rightEyeOut = blendShapesARKit[i].coefficient;
+                    break;
+                case ARKitBlendShapeLocation.EyeLookUpLeft:
+                case ARKitBlendShapeLocation.EyeLookUpRight:
+                    _avatar.SetEyeLookVertical( -blendShapesARKit[i].coefficient );
+                    break;
+                case ARKitBlendShapeLocation.EyeLookDownLeft:
+                case ARKitBlendShapeLocation.EyeLookDownRight:
+                    _avatar.SetEyeLookVertical( blendShapesARKit[i].coefficient );
+                    break;
+            }
+            leftEyeHorizontal = leftEyeOut - leftEyeIn;
+            rightEyeHorizontal = rightEyeOut - rightEyeIn;
+            horizontalResult = ( leftEyeHorizontal + rightEyeHorizontal ) / 2f;
+            horizontalResult *= 10f;
+
+            _avatar.SetEyeLookHorizontal( horizontalResult );
+        }
+        // TODO 임시 변수 -> 동작확인이 끝나는 타이밍에 삭제할 것 @Choi 25.01.16
+        var il = string.IsNullOrEmpty( leftEyeIn.ToString( "0.###" ) ) ? "0.0" : leftEyeIn.ToString( "0.###" );
+        var ir = string.IsNullOrEmpty( rightEyeIn.ToString( "0.###" ) ) ? "0.0" : rightEyeIn.ToString( "0.###" );
+        var ol = string.IsNullOrEmpty( leftEyeOut.ToString( "0.###" ) ) ? "0.0" : leftEyeOut.ToString( "0.###" );
+        var or = string.IsNullOrEmpty( rightEyeOut.ToString( "0.###" ) ) ? "0.0" : rightEyeOut.ToString( "0.###" );
+        var result = string.IsNullOrEmpty( horizontalResult.ToString("0.###") ) ? "0.0" : horizontalResult.ToString( "0.###" );
+        _logDetail.text = $"I_L : {il}, I_R : {ir}\nO_L : {ol}, O_R : {or}";
+        _logResult.text = $"horizontalResult = {result}";
+    }
+
+    /// <summary>
+    /// 표정 정보를 변경
+    /// </summary>
+    /// <param name="arFace">ARFace 정보</param>
+    private void UpdateMouthBlendShape( ARFace arFace )
+    {
+        _faceSubsystem = ( ARKitFaceSubsystem )faceManager.subsystem;
+        using var blendShapesARKit = _faceSubsystem.GetBlendShapeCoefficients( arFace.trackableId, Allocator.Temp );
+        for( var i = 0; i<blendShapesARKit.Length; i++ )
+        {
+            switch( blendShapesARKit[i].blendShapeLocation )
+            {
                 case ARKitBlendShapeLocation.MouthFunnel:
-                    _updateMouthForm = 1 - blendShapesARKit[i].coefficient * 2;
-                    continue;
+                    _avatar.SetMouthForm( 1 - blendShapesARKit[i].coefficient * 2f );
+                    break;
                 case ARKitBlendShapeLocation.JawOpen:
-                    _updateMouthOpen = ( float )( blendShapesARKit[i].coefficient * 1.8 );
-                    continue;
+                    _avatar.SetMouthOpen( blendShapesARKit[i].coefficient * 1.8f );
+                    break;
             }
         }
     }
