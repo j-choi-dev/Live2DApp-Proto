@@ -5,16 +5,11 @@ using UnityEngine.XR.ARKit;
 using Unity.Collections;
 using TMPro;
 using AvatarStstem;
-using Live2D.Cubism.Core;
-using System.Security.AccessControl;
-using Live2D.Cubism.Framework.Json;
+using System;
 
 public class FaceTracking : MonoBehaviour
 {
     [SerializeField] private ARFaceManager faceManager;
-    [SerializeField] private TMP_Text _logDetail;
-    [SerializeField] private TMP_Text _logResult;
-    [SerializeField] private TMP_Text _log3;
     [SerializeField] private StudioAvatar _avatar;
 
     private ARKitFaceSubsystem _faceSubsystem;
@@ -22,8 +17,6 @@ public class FaceTracking : MonoBehaviour
     private void Awake()
     {
         Application.targetFrameRate = 60;
-        _logDetail.text = Vector3.zero.ToString();
-        _logResult.text = Vector3.zero.ToString();
     }
 
     private void OnEnable()
@@ -52,6 +45,7 @@ public class FaceTracking : MonoBehaviour
                 UpdateEyeBlendShape( arFace );
                 UpdateEyeBallDirection( arFace );
                 UpdateMouthBlendShape( arFace );
+                UpdateBodyBlendShape( arFace );
             }
         }
     }
@@ -161,9 +155,6 @@ public class FaceTracking : MonoBehaviour
         var resultX = Mathf.Clamp( eyeBallXValue, -1f, 1f );
         var resultY = Mathf.Clamp( eyeBallXValue, -1f, 1f );
 
-        _logDetail.text = $"{GetTempLogMessageForEyeBalls( eyeLookOutLeft, eyeLookInLeft, eyeLookOutRight, eyeLookInRight )}\n{GetTempLogMessageForEyeBallResult( eyeBallXValue, resultX )}";
-        _logResult.text = $"{GetTempLogMessageForEyeBalls( eyeLookUpLeft, eyeLookDownLeft, eyeLookUpRight, eyeLookDownRight )}\n{GetTempLogMessageForEyeBallResult( eyeBallYValue, resultY )}";
-
         _avatar.SetEyeLookHorizontal( resultX );
         _avatar.SetEyeLookVertical( resultY );
     }
@@ -188,6 +179,10 @@ public class FaceTracking : MonoBehaviour
                     break;
             }
         }
+    }
+
+    private void UpdateBodyBlendShape( ARFace arFace )
+    {
     }
 
     /// <summary>
