@@ -1,5 +1,4 @@
 using AvatarStstem;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -9,91 +8,90 @@ using UnityEngine.XR.ARSubsystems;
 
 public class BodyTrackingTest : MonoBehaviour
 {
-    [SerializeField] ARHumanBodyManager m_HumanBodyManager;
+    [SerializeField] private ARHumanBodyManager _bodyManager;
     [SerializeField] private StudioAvatar _avatar;
     [SerializeField] private TMP_Text _logHeader;
     [SerializeField] private TMP_Text _logDetail;
     [SerializeField] private TMP_Text _logResult;
 
-    private Animator _animator; 
-    
-    private Dictionary<string, int> jointMapping = new Dictionary<string, int>
-    {
-        { "neck", 20 }, // ARKit에서 목 관절 인덱스
-        { "spineBase", 1 } // 척추의 Base 관절 인덱스
-    };
+    private Quaternion _initialRotation = Quaternion.identity;
+    private bool _initialized = false;
 
-    void OnEnable()
+    private void OnEnable()
     {
-        m_HumanBodyManager.humanBodiesChanged += OnHumanBodiesChanged;
+        _bodyManager.humanBodiesChanged += OnHumanBodiesChanged;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
-        if( m_HumanBodyManager != null )
+        _bodyManager.humanBodiesChanged -= OnHumanBodiesChanged;
+    }
+
+    private void OnHumanBodiesChanged( ARHumanBodiesChangedEventArgs args )
+    {
+        foreach( var body in args.added )
         {
-            m_HumanBodyManager.humanBodiesChanged -= OnHumanBodiesChanged;
+            ProcessBody( body );
+        }
+        foreach( var body in args.updated )  // 변경된 데이터도 체크
+        {
+            ProcessBody( body );
         }
     }
 
-    void OnHumanBodiesChanged( ARHumanBodiesChangedEventArgs eventArgs )
+    private void ProcessBody( ARHumanBody body )
     {
-        if( _animator == null )
-        {
-            return;
-        }
+        var bodyDetectedLog = $"Body detected: {body.trackableId}";
+        _logHeader.text = bodyDetectedLog;
 
-        foreach( var body in eventArgs.updated )
+        // ARHumanBody에는 TryGetJoint가 없으므로, joints 배열에서 해당 관절을 직접 가져온다.
+        int hipsIndex = ( int )HumanBodyBones.Hips; // Unity의 HumanBodyBones Enum을 사용
+        if( hipsIndex >= 0 && hipsIndex < body.joints.Length )
         {
-            if( body != null && body.trackingState == TrackingState.Tracking )
+            var hips = body.joints[hipsIndex];
+            if( hips.tracked ) // 해당 관절이 추적되고 있는지 확인
             {
-                ProcessBodyPose( body );
+                var posLog = $"Hips Position: {hips.anchorPose.position}\nHips Rotation: {hips.anchorPose.rotation.eulerAngles}";
+                _logDetail.text = posLog;
+
+                UpdateBodyDirection( hips );
             }
-            var bodyDetectedLog = $"New body Update : {body.trackableId}";
-            _logHeader.text = bodyDetectedLog;
-            var spine = body.joints[( int )HumanBodyBones.Spine];
-        }
-    }
-
-    void ProcessBodyPose( ARHumanBody body )
-    {
-        // 관절 위치 가져오기
-        Vector3? neckPosition = GetJointPosition( body, "neck" );
-        Vector3? spineBasePosition = GetJointPosition( body, "spineBase" );
-
-        if( neckPosition.HasValue && spineBasePosition.HasValue )
-        {
-            Vector3 neckPos = neckPosition.Value;
-            Vector3 spinePos = spineBasePosition.Value;
-
-            // 척추 방향 계산
-            Vector3 spineDirection = neckPos - spinePos;
-
-            // 각도 계산
-            float bodyAngleX = Vector3.Angle( Vector3.up, spineDirection ); // 앞뒤 기울기
-            float bodyAngleY = Mathf.Atan2( spineDirection.x, spineDirection.z ) * Mathf.Rad2Deg; // 좌우 회전
-            float bodyAngleZ = Mathf.Atan2( spineDirection.y, spineDirection.x ) * Mathf.Rad2Deg; // 좌우 기울기
-            var posLog = $"{bodyAngleX}, {bodyAngleY}, {bodyAngleZ}"; 
-            _logDetail.text = posLog;
-
-            // Live2D 아바타에 전달
-        }
-    }
-
-    Vector3? GetJointPosition( ARHumanBody body, string jointName )
-    {
-        // 매핑된 인덱스 가져오기
-        if( jointMapping.TryGetValue( jointName, out int jointIndex ) )
-        {
-            if( jointIndex >= 0 && jointIndex < body.joints.Length )
+            else
             {
-                var joint = body.joints[jointIndex];
-                if( joint.tracked )
-                {
-                    return joint.anchorPose.position;
-                }
+                _logDetail.text = "Hips not tracked.";
             }
         }
-        return null;
+        else
+        {
+            _logDetail.text = "Hips index out of range.";
+        }
+    }
+
+
+    private void UpdateBodyDirection( XRHumanBodyJoint hips )
+    {
+        Quaternion currentRotation = hips.anchorPose.rotation;
+
+        // 초기 자세 설정 (첫 프레임에서 초기화)
+        if( !_initialized )
+        {
+            _initialRotation = currentRotation;
+            _initialized = true;
+        }
+
+        // 상대 회전 계산
+        Quaternion relativeRotation = Quaternion.Inverse( _initialRotation ) * currentRotation;
+        Vector3 eulerAngles = relativeRotation.eulerAngles;
+
+        // X, Y, Z 회전값을 Live2D에 반영
+        float bodyAngleX = eulerAngles.x > 180 ? eulerAngles.x - 360 : eulerAngles.x;
+        float bodyAngleY = eulerAngles.y > 180 ? eulerAngles.y - 360 : eulerAngles.y;
+        float bodyAngleZ = eulerAngles.z > 180 ? eulerAngles.z - 360 : eulerAngles.z;
+
+        _avatar.SetBodyAngleX( bodyAngleX );
+        _avatar.SetBodyAngleY( bodyAngleY );
+        _avatar.SetBodyAngleZ( bodyAngleZ );
+
+        _logResult.text = $"BodyAngleX: {bodyAngleX}\nBodyAngleY: {bodyAngleY}\nBodyAngleZ: {bodyAngleZ}";
     }
 }
