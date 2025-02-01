@@ -14,12 +14,17 @@ public class BodyTrackingTest : MonoBehaviour
     [SerializeField] private TMP_Text _logHeader;
     [SerializeField] private TMP_Text _logDetail;
     [SerializeField] private TMP_Text _logResult;
+    [SerializeField] private GameObject _bodyFlag1;
+    [SerializeField] private GameObject _bodyFlag2;
 
     private Quaternion _initialRotation = Quaternion.identity;
     private bool _initialized = false;
 
     private void Awake()
     {
+        _bodyFlag1.SetActive(false);
+        _bodyFlag2.SetActive( false );
+
         // 현재 사용 가능한 XRSessionSubsystem 찾기
         List<XRSessionSubsystemDescriptor> descriptors = new List<XRSessionSubsystemDescriptor>();
         SubsystemManager.GetSubsystemDescriptors( descriptors );
@@ -39,26 +44,33 @@ public class BodyTrackingTest : MonoBehaviour
                 break;
             }
         }
-
+        var bodyMessage1 = string.Empty;
         if( sessionSubsystem != null )
         {
-            Debug.Log( "✅ 이 기기는 ARKit을 지원합니다." );
+            bodyMessage1 = "ARKit을 지원합니다.";
         }
         else
         {
-            Debug.Log( "❌ ARKit을 지원하지 않는 기기입니다." );
+            bodyMessage1 = "ARKit을 지원하지 않는 기기입니다.";
+            _bodyFlag1.SetActive( true );
             return;
         }
+        Debug.Log( bodyMessage1 );
+        _logHeader.text = bodyMessage1;
 
         // 🔹 ARHumanBodyManager를 이용하여 Body Tracking 지원 여부 확인
+        var bodyMessage2 = string.Empty;
         if( _bodyManager != null && _bodyManager.subsystem != null && _bodyManager.subsystem.running )
         {
-            Debug.Log( "✅ 이 기기는 ARKit Body Tracking을 지원합니다!" );
+            bodyMessage2 = "ARKit Body Tracking을 지원합니다!";
         }
         else
         {
-            Debug.Log( "❌ 이 기기는 ARKit Body Tracking을 지원하지 않습니다." );
+            bodyMessage2 = "ARKit Body Tracking을 지원하지 않습니다.";
+            _bodyFlag2.SetActive( true );
         }
+        Debug.Log( bodyMessage2 );
+        _logHeader.text += $"\n{bodyMessage2}";
     }
 
     private void Start()
