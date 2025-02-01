@@ -1,9 +1,10 @@
-using AvatarStstem;
+ï»¿using AvatarStstem;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
+using UnityEngine.XR.ARKit;
 using UnityEngine.XR.ARSubsystems;
 
 public class BodyTrackingTest : MonoBehaviour
@@ -16,6 +17,65 @@ public class BodyTrackingTest : MonoBehaviour
 
     private Quaternion _initialRotation = Quaternion.identity;
     private bool _initialized = false;
+
+    private void Awake()
+    {
+        // í˜„ìž¬ ì‚¬ìš© ê°€ëŠ¥í•œ XRSessionSubsystem ì°¾ê¸°
+        List<XRSessionSubsystemDescriptor> descriptors = new List<XRSessionSubsystemDescriptor>();
+        SubsystemManager.GetSubsystemDescriptors( descriptors );
+
+        foreach( var descriptor in descriptors )
+        {
+            Debug.Log( $"[XRSessionSubsystem] {descriptor.id}" );
+        }
+
+        // ARKitì´ ì§€ì›ë˜ëŠ”ì§€ í™•ì¸
+        XRSessionSubsystem sessionSubsystem = null;
+        foreach( var descriptor in descriptors )
+        {
+            if( descriptor.id == "ARKit-Session" )
+            {
+                sessionSubsystem = descriptor.Create();
+                break;
+            }
+        }
+
+        if( sessionSubsystem != null )
+        {
+            Debug.Log( "âœ… ì´ ê¸°ê¸°ëŠ” ARKitì„ ì§€ì›í•©ë‹ˆë‹¤." );
+        }
+        else
+        {
+            Debug.Log( "âŒ ARKitì„ ì§€ì›í•˜ì§€ ì•ŠëŠ” ê¸°ê¸°ìž…ë‹ˆë‹¤." );
+            return;
+        }
+
+        // ðŸ”¹ ARHumanBodyManagerë¥¼ ì´ìš©í•˜ì—¬ Body Tracking ì§€ì› ì—¬ë¶€ í™•ì¸
+        if( _bodyManager != null && _bodyManager.subsystem != null && _bodyManager.subsystem.running )
+        {
+            Debug.Log( "âœ… ì´ ê¸°ê¸°ëŠ” ARKit Body Trackingì„ ì§€ì›í•©ë‹ˆë‹¤!" );
+        }
+        else
+        {
+            Debug.Log( "âŒ ì´ ê¸°ê¸°ëŠ” ARKit Body Trackingì„ ì§€ì›í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤." );
+        }
+    }
+
+    private void Start()
+    {
+        CheckARKitBodyTracking();
+    }
+    private void CheckARKitBodyTracking()
+    {
+        if( _bodyManager.subsystem != null && _bodyManager.subsystem.running )
+        {
+            Debug.Log( "âœ… ARKit Body Trackingì´ ì‹¤í–‰ ì¤‘ìž…ë‹ˆë‹¤!" );
+        }
+        else
+        {
+            Debug.Log( "âŒ ARKit Body Trackingì´ ì‹¤í–‰ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤." );
+        }
+    }
 
     private void OnEnable()
     {
@@ -33,7 +93,7 @@ public class BodyTrackingTest : MonoBehaviour
         {
             ProcessBody( body );
         }
-        foreach( var body in args.updated )  // º¯°æµÈ µ¥ÀÌÅÍµµ Ã¼Å©
+        foreach( var body in args.updated )  // ë³€ê²½ëœ ë°ì´í„°ë„ ì²´í¬
         {
             ProcessBody( body );
         }
@@ -44,12 +104,12 @@ public class BodyTrackingTest : MonoBehaviour
         var bodyDetectedLog = $"Body detected: {body.trackableId}";
         _logHeader.text = bodyDetectedLog;
 
-        // ARHumanBody¿¡´Â TryGetJoint°¡ ¾øÀ¸¹Ç·Î, joints ¹è¿­¿¡¼­ ÇØ´ç °üÀýÀ» Á÷Á¢ °¡Á®¿Â´Ù.
-        int hipsIndex = ( int )HumanBodyBones.Hips; // UnityÀÇ HumanBodyBones EnumÀ» »ç¿ë
+        // ARHumanBodyì—ëŠ” TryGetJointê°€ ì—†ìœ¼ë¯€ë¡œ, joints ë°°ì—´ì—ì„œ í•´ë‹¹ ê´€ì ˆì„ ì§ì ‘ ê°€ì ¸ì˜¨ë‹¤.
+        int hipsIndex = ( int )HumanBodyBones.Hips; // Unityì˜ HumanBodyBones Enumì„ ì‚¬ìš©
         if( hipsIndex >= 0 && hipsIndex < body.joints.Length )
         {
             var hips = body.joints[hipsIndex];
-            if( hips.tracked ) // ÇØ´ç °üÀýÀÌ ÃßÀûµÇ°í ÀÖ´ÂÁö È®ÀÎ
+            if( hips.tracked ) // í•´ë‹¹ ê´€ì ˆì´ ì¶”ì ë˜ê³  ìžˆëŠ”ì§€ í™•ì¸
             {
                 var posLog = $"Hips Position: {hips.anchorPose.position}\nHips Rotation: {hips.anchorPose.rotation.eulerAngles}";
                 _logDetail.text = posLog;
@@ -72,18 +132,18 @@ public class BodyTrackingTest : MonoBehaviour
     {
         Quaternion currentRotation = hips.anchorPose.rotation;
 
-        // ÃÊ±â ÀÚ¼¼ ¼³Á¤ (Ã¹ ÇÁ·¹ÀÓ¿¡¼­ ÃÊ±âÈ­)
+        // ì´ˆê¸° ìžì„¸ ì„¤ì • (ì²« í”„ë ˆìž„ì—ì„œ ì´ˆê¸°í™”)
         if( !_initialized )
         {
             _initialRotation = currentRotation;
             _initialized = true;
         }
 
-        // »ó´ë È¸Àü °è»ê
+        // ìƒëŒ€ íšŒì „ ê³„ì‚°
         Quaternion relativeRotation = Quaternion.Inverse( _initialRotation ) * currentRotation;
         Vector3 eulerAngles = relativeRotation.eulerAngles;
 
-        // X, Y, Z È¸Àü°ªÀ» Live2D¿¡ ¹Ý¿µ
+        // X, Y, Z íšŒì „ê°’ì„ Live2Dì— ë°˜ì˜
         float bodyAngleX = eulerAngles.x > 180 ? eulerAngles.x - 360 : eulerAngles.x;
         float bodyAngleY = eulerAngles.y > 180 ? eulerAngles.y - 360 : eulerAngles.y;
         float bodyAngleZ = eulerAngles.z > 180 ? eulerAngles.z - 360 : eulerAngles.z;
