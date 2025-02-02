@@ -48,7 +48,6 @@ public class BodyTracking : MonoBehaviour
         {
             bodyMessage1 = "ARKit Not Supported";
             _flagARKit.SetActive( true );
-            return;
         }
         Debug.Log( bodyMessage1 );
         _logHeader.text = bodyMessage1;
@@ -65,23 +64,6 @@ public class BodyTracking : MonoBehaviour
         }
         Debug.Log( bodyMessage2 );
         _logHeader.text += $"\n{bodyMessage2}";
-    }
-
-    private void Start()
-    {
-        CheckARKitBodyTracking();
-    }
-
-    private void CheckARKitBodyTracking()
-    {
-        if( _bodyManager.subsystem != null && _bodyManager.subsystem.running )
-        {
-            Debug.Log( "ARKit Body Tracking Running" );
-        }
-        else
-        {
-            Debug.Log( "ARKit Body Tracking Not Running" );
-        }
     }
 
     private void OnEnable()
