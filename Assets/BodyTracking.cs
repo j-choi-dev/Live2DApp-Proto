@@ -10,16 +10,13 @@ public class BodyTracking : MonoBehaviour
 {
     [SerializeField] private ARHumanBodyManager _bodyManager;
     [SerializeField] private StudioAvatar _avatar;
-    [SerializeField] private TMP_Text _logHeader;
-    [SerializeField] private TMP_Text _logDetail;
-    [SerializeField] private TMP_Text _logResult;
     [SerializeField] private GameObject _flagARKit;
-    [SerializeField] private GameObject _bodyFlag2;
+    [SerializeField] private GameObject _bodyFlag;
 
     private void Awake()
     {
         _flagARKit.SetActive( false );
-        _bodyFlag2.SetActive( false );
+        _bodyFlag.SetActive( false );
 
         var descriptors = new List<XRSessionSubsystemDescriptor>();
         SubsystemManager.GetSubsystemDescriptors( descriptors );
@@ -40,30 +37,18 @@ public class BodyTracking : MonoBehaviour
             }
         }
         var bodyMessage1 = string.Empty;
-        if( sessionSubsystem != null )
+        if( sessionSubsystem == null )
         {
-            bodyMessage1 = "ARKit Supported.";
-        }
-        else
-        {
-            bodyMessage1 = "ARKit Not Supported";
             _flagARKit.SetActive( true );
         }
-        Debug.Log( bodyMessage1 );
-        _logHeader.text = bodyMessage1;
 
         var bodyMessage2 = string.Empty;
-        if( _bodyManager != null && _bodyManager.subsystem != null && _bodyManager.subsystem.running )
+        if( _bodyManager == null || 
+            _bodyManager.subsystem == null || 
+            _bodyManager.subsystem.running )
         {
-            bodyMessage2 = "ARKit Body Tracking supported";
+            _bodyFlag.SetActive( true );
         }
-        else
-        {
-            bodyMessage2 = "ARKit Body Tracking Not supported";
-            _bodyFlag2.SetActive( true );
-        }
-        Debug.Log( bodyMessage2 );
-        _logHeader.text += $"\n{bodyMessage2}";
     }
 
     private void OnEnable()
@@ -89,28 +74,17 @@ public class BodyTracking : MonoBehaviour
 
     private void ProcessBody( ARHumanBody body )
     {
-        var bodyDetectedLog = $"Body : {body.trackableId}";
-        _logHeader.text = bodyDetectedLog;
-
         int hipsIndex = ( int )HumanBodyBones.Hips;
-        if( hipsIndex >= 0 && hipsIndex < body.joints.Length )
+        if( hipsIndex < 0 || hipsIndex >= body.joints.Length )
         {
-            var hips = body.joints[hipsIndex];
-            if( hips.tracked )
-            {
-                var posLog = $"Hips Position: {hips.anchorPose.position}\nHips Rotation: {hips.anchorPose.rotation.eulerAngles}";
-                _logDetail.text = posLog;
-
-                UpdateBodyDirection( hips );
-            }
-            else
-            {
-                _logDetail.text = "Hips not tracked.";
-            }
+            return;
         }
-        else
+        var hips = body.joints[hipsIndex];
+        if( hips.tracked )
         {
-            _logDetail.text = "Hips index out of range.";
+            var posLog = $"Hips Position: {hips.anchorPose.position}\nHips Rotation: {hips.anchorPose.rotation.eulerAngles}";
+
+            UpdateBodyDirection( hips );
         }
     }
 
