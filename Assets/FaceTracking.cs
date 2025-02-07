@@ -3,27 +3,22 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using UnityEngine.XR.ARKit;
 using Unity.Collections;
-using TMPro;
 using AvatarStstem;
-using Live2D.Cubism.Core;
-using System.Security.AccessControl;
-using Live2D.Cubism.Framework.Json;
+using TMPro;
 
 public class FaceTracking : MonoBehaviour
 {
     [SerializeField] private ARFaceManager faceManager;
+    [SerializeField] private StudioAvatar _avatar;
+    [SerializeField] private TMP_Text _logHeader;
     [SerializeField] private TMP_Text _logDetail;
     [SerializeField] private TMP_Text _logResult;
-    [SerializeField] private TMP_Text _log3;
-    [SerializeField] private StudioAvatar _avatar;
 
     private ARKitFaceSubsystem _faceSubsystem;
 
     private void Awake()
     {
         Application.targetFrameRate = 60;
-        _logDetail.text = Vector3.zero.ToString();
-        _logResult.text = Vector3.zero.ToString();
     }
 
     private void OnEnable()
@@ -52,6 +47,7 @@ public class FaceTracking : MonoBehaviour
                 UpdateEyeBlendShape( arFace );
                 UpdateEyeBallDirection( arFace );
                 UpdateMouthBlendShape( arFace );
+                UpdateBodyBlendShape( arFace );
             }
         }
     }
@@ -161,9 +157,6 @@ public class FaceTracking : MonoBehaviour
         var resultX = Mathf.Clamp( eyeBallXValue, -1f, 1f );
         var resultY = Mathf.Clamp( eyeBallXValue, -1f, 1f );
 
-        _logDetail.text = $"{GetTempLogMessageForEyeBalls( eyeLookOutLeft, eyeLookInLeft, eyeLookOutRight, eyeLookInRight )}\n{GetTempLogMessageForEyeBallResult( eyeBallXValue, resultX )}";
-        _logResult.text = $"{GetTempLogMessageForEyeBalls( eyeLookUpLeft, eyeLookDownLeft, eyeLookUpRight, eyeLookDownRight )}\n{GetTempLogMessageForEyeBallResult( eyeBallYValue, resultY )}";
-
         _avatar.SetEyeLookHorizontal( resultX );
         _avatar.SetEyeLookVertical( resultY );
     }
@@ -190,6 +183,32 @@ public class FaceTracking : MonoBehaviour
         }
     }
 
+    // TODO @Choi 25.03.04 00:40
+    // Body 트래킹이 안 먹힐 경우, 이하의 내용은 주입할 전략
+    // 리팩터링 대상(Must)
+    private void UpdateBodyBlendShape( ARFace arFace )
+    {
+        // Face Tracking을 통한 머리 회전 값 가져오기
+        var headRotation = arFace.transform.rotation;
+
+        // 오일러 각도로 변환 (Unity 좌표계 기준)
+        var eulerRotation = headRotation.eulerAngles;
+
+        // X, Y, Z 각도를 Live2D 아바타의 BodyAngleX, Y, Z로 변환
+        var bodyAngleX = Mathf.Clamp( eulerRotation.x, -30f, 30f );
+        var bodyAngleY = Mathf.Clamp( eulerRotation.y, -40f, 40f );
+        var bodyAngleZ = Mathf.Clamp( eulerRotation.z, -20f, 20f );
+
+        // 아바타 적용
+        _avatar.SetBodyAngleX( bodyAngleX );
+        _avatar.SetBodyAngleY( bodyAngleY );
+        _avatar.SetBodyAngleZ( bodyAngleZ );
+
+        // TODO 로그 출력 (디버깅용) @Choi 25.03.04 00:40
+        Debug.Log( $"Head Rotation: X={bodyAngleX}, Y={bodyAngleY}, Z={bodyAngleZ}" );
+        _logHeader.text = $"Head Rotation: X={bodyAngleX}, Y={bodyAngleY}, Z={bodyAngleZ}";
+    }
+
     /// <summary>
     /// 얼굴 각도를 정규화하는 함수
     /// </summary>
@@ -203,13 +222,5 @@ public class FaceTracking : MonoBehaviour
         }
         return angle;
     }
-
-    private string GetTempLogMessageForEyeBalls(float valL1 , float valL2, float valR1, float valR2 )
-        => $"外視L : {GetFormatedStringByFloat( valL1 )}, 内視L : {GetFormatedStringByFloat( valL2 )}\n外視R : {GetFormatedStringByFloat( valR1 )}, 内視R : {GetFormatedStringByFloat( valR2 )}";
-    private string GetTempLogMessageForEyeBallResult( float raw, float result )
-        => $"raw = {GetFormatedStringByFloat( raw )}\nresult = {GetFormatedStringByFloat( result )} ";
-
-    private string GetFormatedStringByFloat(float val)
-        => string.IsNullOrEmpty( val.ToString( "F2" ) ) ? "0.0" : val.ToString( "F2" );
 }
 

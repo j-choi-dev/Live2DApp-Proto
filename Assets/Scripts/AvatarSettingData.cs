@@ -11,6 +11,9 @@ namespace AvatarSystem.Domain
         EyeBallY,
         LeftEyeBlink,
         RightEyeBlink,
+        BodyAngle_X,
+        BodyAngle_Y,
+        BodyAngle_Z,
     }
 
     [System.Serializable]

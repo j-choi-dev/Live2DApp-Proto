@@ -19,6 +19,7 @@ namespace AvatarStstem
         private CubismParameter _faceAngleZ = null;
         private CubismParameter _bodyAngleX = null;
         private CubismParameter _bodyAngleY = null;
+        private CubismParameter _bodyAngleZ = null;
         private CubismParameter _leftEyeBlink = null;
         private CubismParameter _rightEyeBlink = null;
         private CubismParameter _eyeBallX = null;
@@ -43,6 +44,11 @@ namespace AvatarStstem
         // ÀÔ¼ú Á¤º¸ ¸â¹öº¯¼ö
         private float _updateMouthForm;
         private float _updateMouthOpen;
+
+        // ¸ö È¸Àü°ª ¸â¹öº¯¼ö
+        private float _updateBodyAngleX;
+        private float _updateBodyAngleY;
+        private float _updateBodyAngleZ;
 
         public bool IsInitialized => _isInitialized;
 
@@ -74,6 +80,10 @@ namespace AvatarStstem
 
             _eyeBallX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallX].parameter.Id );
             _eyeBallY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.EyeBallY].parameter.Id );
+
+            _bodyAngleX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_X].parameter.Id );
+            _bodyAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Y].parameter.Id );
+            _bodyAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Z].parameter.Id );
         }
 
         public void SetFaceAngleX( float value ) => _updateFaceAngleX = value;
@@ -87,6 +97,10 @@ namespace AvatarStstem
 
         public void SetMouthForm( float value ) => _updateMouthForm = value;
         public void SetMouthOpen( float value ) => _updateMouthOpen = value;
+
+        public void SetBodyAngleX( float value ) => _updateBodyAngleX = value;
+        public void SetBodyAngleY( float value ) => _updateBodyAngleY = value;
+        public void SetBodyAngleZ( float value ) => _updateBodyAngleZ = value;
 
         private void LateUpdate()
         {
@@ -103,6 +117,10 @@ namespace AvatarStstem
 
             _eyeBallX.Value = _updateEyeballX;
             _eyeBallY.Value = _updateEyeballY;
+
+            _bodyAngleX.Value = _updateBodyAngleX;
+            _bodyAngleY.Value = _updateBodyAngleY;
+            _bodyAngleZ.Value = _updateBodyAngleZ;
         }
     }
 }
