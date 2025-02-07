@@ -69,8 +69,11 @@ class OVRLipSyncBuildPostProcessor : MonoBehaviour
         {
             return;
         }
-
-        var targetGUID = project.TargetGuidByName(PBXProject.GetUnityTargetName());
+#if UNITY_2019_3_OR_NEWER
+        string targetGUID = project.GetUnityFrameworkTargetGuid();
+#else
+        string targetGUID = project.TargetGuidByName(PBXProject.GetUnityTargetName());
+#endif
         // Limit the target to ARM64
         project.SetBuildProperty(targetGUID, "ARCHS", "arm64");
 
