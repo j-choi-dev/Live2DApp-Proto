@@ -25,7 +25,7 @@ namespace AvatarStstem
         private CubismParameter _eyeBallX = null;
         private CubismParameter _eyeBallY = null;
         private CubismParameter _mouthForm = null;
-        private CubismParameter _mouthOpen = null;
+        private CubismParameter _mouthOpenY = null;
 
         // ¾ó±¼ È¸Àü°ª ¸â¹öº¯¼ö
         private float _updateFaceAngleX;
@@ -49,6 +49,8 @@ namespace AvatarStstem
         private float _updateBodyAngleX;
         private float _updateBodyAngleY;
         private float _updateBodyAngleZ;
+
+        private float _updateMouthOpenY;
 
         public bool IsInitialized => _isInitialized;
 
@@ -84,6 +86,8 @@ namespace AvatarStstem
             _bodyAngleX = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_X].parameter.Id );
             _bodyAngleY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Y].parameter.Id );
             _bodyAngleZ = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.BodyAngle_Z].parameter.Id );
+
+            _mouthOpenY = _avatar.Parameters.First( arg => arg.Id == _pair.ParameterPairs[( int )AvatarPartsParameter.MouthOpen_Y].parameter.Id );
         }
 
         public void SetFaceAngleX( float value ) => _updateFaceAngleX = value;
@@ -101,6 +105,8 @@ namespace AvatarStstem
         public void SetBodyAngleX( float value ) => _updateBodyAngleX = value;
         public void SetBodyAngleY( float value ) => _updateBodyAngleY = value;
         public void SetBodyAngleZ( float value ) => _updateBodyAngleZ = value;
+
+        public void SetMouthParamY(float value) => _updateMouthOpenY = value;
 
         private void LateUpdate()
         {
@@ -121,6 +127,8 @@ namespace AvatarStstem
             _bodyAngleX.Value = _updateBodyAngleX;
             _bodyAngleY.Value = _updateBodyAngleY;
             _bodyAngleZ.Value = _updateBodyAngleZ;
+
+            _mouthOpenY.Value = _updateMouthOpenY;
         }
     }
 }
