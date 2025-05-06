@@ -14,6 +14,7 @@ namespace AvatarSystem.Domain
         BodyAngle_X,
         BodyAngle_Y,
         BodyAngle_Z,
+        MouthOpen_Y,
     }
 
     [System.Serializable]
