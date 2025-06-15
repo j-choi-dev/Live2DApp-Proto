@@ -58,6 +58,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moc: {fileID: 11400000, guid: 0cd25900b6821d346824476d7529af29, type: 2}
+  _parameters:
+  - {fileID: 114126367251692130}
+  - {fileID: 114950663046352068}
+  _parts: []
 --- !u!114 &114524724953595766
 MonoBehaviour:
   m_ObjectHideFlags: 0

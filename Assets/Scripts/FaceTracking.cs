@@ -8,8 +8,8 @@ using TMPro;
 
 public class FaceTracking : MonoBehaviour
 {
-    [SerializeField] private ARFaceManager faceManager;
-    [SerializeField] private StudioAvatar _avatar;
+    [SerializeField] private ARFaceManager faceManager; // From FaceControl
+    [SerializeField] private StudioAvatar _avatar; // From Resource
     [SerializeField] private TMP_Text _logHeader;
     [SerializeField] private TMP_Text _logDetail;
     [SerializeField] private TMP_Text _logResult;
