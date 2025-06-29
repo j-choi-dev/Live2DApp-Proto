@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace LiveApp
+namespace LiveAppCore
 {
     public class SceneLoadController : MonoBehaviour
     {
