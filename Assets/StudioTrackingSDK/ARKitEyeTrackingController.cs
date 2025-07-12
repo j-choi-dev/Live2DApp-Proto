@@ -3,13 +3,13 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using UniRx;
 using System;
-using StudioTrackingSDK.EyeTracking.Domain;
+using StudioTrackingSDK.Domain;
 using UnityEngine.XR.ARKit;
 using Unity.Collections;
 
-namespace StudioTrackingSDK.Face.Infrastructure
+namespace StudioTrackingSDK.Infrastructure
 {
-    public class ARKitEyeTracking : MonoBehaviour, IEyeTrackingDomain
+    public class ARKitEyeTrackingController : MonoBehaviour, IEyeTrackingDomain
     {
         [SerializeField] private ARFaceManager _faceManager;
         private Subject<float> _onEyeBallAngleX = new Subject<float>();

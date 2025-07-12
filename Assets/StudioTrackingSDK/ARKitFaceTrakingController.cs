@@ -3,9 +3,9 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 using UniRx;
 using System;
-using StudioTrackingSDK.FaceTracking.Domain;
+using StudioTrackingSDK.Domain;
 
-namespace StudioTrackingSDK.FaceTracking.Infrastructure
+namespace StudioTrackingSDK.Infrastructure
 {
     public class ARKitFaceTrakingController : MonoBehaviour, IFaceTrackingDomain
     {

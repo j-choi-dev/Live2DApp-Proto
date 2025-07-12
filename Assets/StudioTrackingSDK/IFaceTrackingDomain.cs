@@ -1,6 +1,6 @@
 using System;
 
-namespace StudioTrackingSDK.FaceTracking.Domain
+namespace StudioTrackingSDK.Domain
 {
     public interface IFaceTrackingDomain
     {

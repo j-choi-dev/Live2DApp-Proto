@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 155764178386658926}
   - component: {fileID: 6867358909134192767}
-  - component: {fileID: 6867358909134192768}
+  - component: {fileID: 3061732700728249284}
   m_Layer: 0
   m_Name: ARKitContext
   m_TagString: Untagged
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _faceManager: {fileID: 6867358909900239886}
---- !u!114 &6867358909134192768
+--- !u!114 &3061732700728249284
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6634514250334912596}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56b46777101dc443cac2002baab0620c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4d9f253c7d9614b1b8bebc418b9d353d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _faceManager: {fileID: 6867358909900239886}
