@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace LiveApp.UI
+namespace LiveAppUI.Presenter
 {
     public class SystemUIPresenter : MonoBehaviour
     {
