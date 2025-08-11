@@ -5,12 +5,13 @@ using UniRx;
 
 namespace LiveAppUI.View
 {
-	public class ObservableToggleButtonTMPro : ObservableButton
+	public class ObservableToggleButton : ObservableButton
 	{
 		[SerializeField] private Button _button = null;
         [SerializeField] private Image _active = null;
         [SerializeField] private Image _inactive = null;
-        [SerializeField] private bool _isActive = false;
+
+        public bool IsActive { get; private set; } = false;
 
         private Subject<bool> _onActiveChange = new Subject<bool>();
         public IObservable<bool> OnActiveChange => _onActiveChange;
@@ -23,8 +24,8 @@ namespace LiveAppUI.View
         {
             _button.OnClickAsObservable()
                 .Subscribe( isOn =>
-                { 
-                    _isActive = !_isActive;
+                {
+                    IsActive = !IsActive;
                     ApplyActive();
                 } );
         }
@@ -43,7 +44,7 @@ namespace LiveAppUI.View
 
         private void ApplyActive()
         {
-            if ( _isActive )
+            if ( IsActive )
             {
                 _active.gameObject.SetActive( true );
                 _inactive.gameObject.SetActive( false );
@@ -54,7 +55,7 @@ namespace LiveAppUI.View
                 _active.gameObject.SetActive( false );
                 _inactive.gameObject.SetActive( true );
             }
-            _onActiveChange.OnNext( _isActive );
+            _onActiveChange.OnNext( IsActive );
         }
 	}
 }
