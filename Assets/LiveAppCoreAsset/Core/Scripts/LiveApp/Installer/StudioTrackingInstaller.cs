@@ -1,11 +1,9 @@
 using StudioTrackingSDK.Domain;
 using StudioTrackingSDK.Infrastructure;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-namespace AppCore.Installer
+namespace LiveAppCore.Installer
 {
     public class StudioTrackingInstaller : MonoInstaller
     {

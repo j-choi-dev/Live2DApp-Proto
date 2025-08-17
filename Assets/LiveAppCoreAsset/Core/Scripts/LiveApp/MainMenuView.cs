@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
-using System.Linq;
 using Cysharp.Threading.Tasks;
+using System;
+using LiveAppUI.Presenter;
 
 namespace LiveAppUI.View
 {
-    public class MainMenuView : MonoBehaviour
+    public class MainMenuView : MonoBehaviour, IMainMenuView
     {
         [SerializeField]
         private List<ButtonViewPair> _pairs = null;
@@ -16,6 +17,11 @@ namespace LiveAppUI.View
 
         [SerializeField]
         private ObservableButton _emergencyButton = null;
+
+
+        private Subject<bool> _onRecordingChanged = new Subject<bool>();
+        public IObservable<bool> OnRecordingChanged => _onRecordingChanged;
+        public IObservable<Unit> OnClickEmergency => _emergencyButton.OnClick;
 
         private void Awake()
         {
@@ -36,11 +42,7 @@ namespace LiveAppUI.View
             }
 
             _recButton.OnActiveChange
-                .Subscribe( arg => Debug.Log( _recButton.IsActive ? "Recording" : "Stop" ) )
-                .AddTo( this );
-
-            _emergencyButton.OnClick
-                .Subscribe( arg => Debug.Log( "Emergency" ) )
+                .Subscribe( arg => _onRecordingChanged.OnNext(arg) )
                 .AddTo( this );
         }
     }

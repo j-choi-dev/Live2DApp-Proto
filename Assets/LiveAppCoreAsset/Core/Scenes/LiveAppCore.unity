@@ -152,7 +152,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers: []
-  _monoInstallers: []
+  _monoInstallers:
+  - {fileID: 7835912479745685768}
   _installerPrefabs: []
   _autoRun: 1
   OnPreInstall:
@@ -168,7 +169,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   _parentNewObjectsUnderSceneContext: 0
-  _contractNames: []
+  _contractNames:
+  - Default
   _parentContractNames: []
 --- !u!4 &1340007243
 Transform:
@@ -464,3 +466,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b1f3c98f97273470d8ee0c8337df80ef, type: 3}
+--- !u!114 &7835912479745685768 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7835912479085264654, guid: b1f3c98f97273470d8ee0c8337df80ef, type: 3}
+  m_PrefabInstance: {fileID: 7835912479745685767}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3819f1edeffd145469856d3b5784bb2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
