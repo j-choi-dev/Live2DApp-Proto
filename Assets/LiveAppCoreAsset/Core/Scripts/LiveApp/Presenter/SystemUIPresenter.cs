@@ -8,7 +8,7 @@ namespace LiveAppUI.Presenter
     {
         private IMainMenuView _mainMenuView;
 
-        [ Inject]
+        [Inject]
         public void Initialize(
             IMainMenuView mainMenuView )
         {
@@ -18,8 +18,8 @@ namespace LiveAppUI.Presenter
         private void Awake()
         {
             _mainMenuView.OnRecordingChanged
-                .Subscribe(arg => Debug.Log($"OnRecordingChanged ... {arg}") )
-                .AddTo(this);
+                .Subscribe( arg => Debug.Log( $"OnRecordingChanged ... {arg}" ) )
+                .AddTo( this );
             _mainMenuView.OnClickEmergency
                 .Subscribe( arg => Debug.Log( $"OnClickEmergency ... {arg}" ) )
                 .AddTo( this );
